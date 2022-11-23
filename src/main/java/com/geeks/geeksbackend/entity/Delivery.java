@@ -3,20 +3,21 @@ package com.geeks.geeksbackend.entity;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "tbl_delivery")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "delivery")
 public class Delivery extends BaseEntity {
 
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String type1;
     private int price;
@@ -25,5 +26,7 @@ public class Delivery extends BaseEntity {
     private int maxParticipant;
     private String destination;
     private CoBuyStatus status;
+    @OneToOne
+    @JoinColumn(name = "post_id")
     private Post post;
 }
