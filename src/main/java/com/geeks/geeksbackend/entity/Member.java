@@ -2,20 +2,21 @@ package com.geeks.geeksbackend.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "tbl_member")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "member")
 public class Member extends BaseEntity {
 
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String nickname;
     private String email;

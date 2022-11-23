@@ -2,8 +2,10 @@ package com.geeks.geeksbackend.entity;
 
 import lombok.*;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "tbl_post")
 @Getter
 @Setter
 @Builder
@@ -12,7 +14,8 @@ import javax.persistence.Id;
 public class Post extends BaseEntity {
 
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
     private String content;
 }
