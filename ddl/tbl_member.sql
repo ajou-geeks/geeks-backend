@@ -18,7 +18,7 @@ create table tbl_member
     updated_by      bigint unsigned                             not null,
     updated_at      timestamp       default current_timestamp   not null on update current_timestamp,
     deleted_by      bigint unsigned                                 null,
-    deleted_at      timestamp                                       null,
+    deleted_at      timestamp                                       null
 
     ) engine = InnoDB
     default charset = utf8mb4
