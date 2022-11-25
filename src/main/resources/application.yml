@@ -1,5 +1,6 @@
 spring:
   datasource:
+    #url: jdbc:mysql://43.201.121.170:3306/geeks?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     url: jdbc:mysql://localhost:3306/geeks?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: geeks
     password: geeksroot
