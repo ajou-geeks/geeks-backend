@@ -25,16 +25,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BaseEntity {
 
-    @CreatedBy @Column(name = "created_by")
+    @CreatedBy
+    @Column(name = "created_by")
     protected Long createdBy;
-    @CreatedDate @Column(name = "created_at")
+
+    @CreatedDate
+    @Column(name = "created_at")
     protected LocalDateTime createdAt;
-    @LastModifiedBy @Column(name = "updated_by")
+
+    @LastModifiedBy
+    @Column(name = "updated_by")
     protected Long updatedBy;
-    @LastModifiedDate @Column(name = "updated_at")
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
     protected LocalDateTime updatedAt;
-    @Column(name = "deleted_by")
-    protected Long deletedBy;
+
+    @Column(name = "deleted")
+    protected boolean deleted;
+
     @Column(name = "deleted_at")
     protected LocalDateTime deletedAt;
 }

@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 public class ProductDto {
 
+    private Long id;
+
     @NotNull
     @Size(min = 3, max = 50)
     private String name;
@@ -45,6 +47,7 @@ public class ProductDto {
         if (product == null) return null;
 
         return ProductDto.builder()
+                .id(product.getId())
                 .name(product.getName())
                 .type1(product.getType1().title())
                 .price(product.getPrice())
