@@ -60,4 +60,11 @@ public class ProductService {
 
         return ProductDto.from(product);
     }
+
+    public void deleteProduct(Long id, UserDto userDto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+
+        productRepository.delete(product);
+    }
 }

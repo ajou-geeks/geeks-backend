@@ -75,4 +75,18 @@ public class ProductController {
         ProductDto productDto = productService.updateProduct(Long.parseLong(id), input, userDto);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "DELETE() /products", description = "물품 공동구매 삭제 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "NO CONTENT"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteProduct(@PathVariable("id") String id) {
+        UserDto userDto = memberService.getMyUserWithAuthorities();
+        productService.deleteProduct(Long.parseLong(id), userDto);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 }
