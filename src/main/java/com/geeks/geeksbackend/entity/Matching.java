@@ -2,7 +2,11 @@ package com.geeks.geeksbackend.entity;
 
 import com.geeks.geeksbackend.enumeration.CharacterType;
 import com.geeks.geeksbackend.enumeration.LifeType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -10,7 +14,7 @@ import javax.persistence.*;
 @Table(name = "tbl_matching")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Matching extends BaseEntity {

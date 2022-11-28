@@ -8,10 +8,10 @@ import lombok.Getter;
 public enum CoBuyStatus {
     OPEN("Opened"),
     CLOSE("Closed"),
-    CANCLE("Cancelled"),
-    SETTLE("Settleed"),
+    CANCEL("Cancelled"),
+    SETTLE("Settled"),
     COMPLETE("Completed"),
-    ERR("Error");
+    ERROR("Error");
 
     private final String value;
 

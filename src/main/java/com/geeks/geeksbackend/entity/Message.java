@@ -1,6 +1,10 @@
 package com.geeks.geeksbackend.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -8,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "tbl_message")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Message extends BaseEntity {
