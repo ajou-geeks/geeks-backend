@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-
+@Tag(name = "auth", description = "인증 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -40,7 +42,7 @@ public class AuthController {
     @Parameters({
             @Parameter(name = "email", description = "이메일", example = "abc123"),
             @Parameter(name = "password", description = "비밀번호", example = "a1b2c3"),
-            @Parameter(name = "file", description = "입사확인서", example = "입사확인서.pdf")
+            @Parameter(name = "file", description = "입주확인서", example = "입주확인서.pdf")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = UserDto.class)))
@@ -49,9 +51,8 @@ public class AuthController {
     public ResponseEntity<?> signup(
             @Valid @ModelAttribute UserDto userDto
     ) throws IOException {
-        String savedName = fileService.saveFile(userDto.getFile());
-        memberService.signup(userDto, savedName);
-        return ResponseEntity.ok().body(userDto.getEmail() + " " + savedName);
+        memberService.signup(userDto);
+        return ResponseEntity.ok().body(userDto.getEmail() + " " + userDto.getFile().getOriginalFilename());
     }
 
     @Operation(summary = "POST() /auth/login", description = "로그인 API")
@@ -60,10 +61,10 @@ public class AuthController {
             @Parameter(name = "password", description = "비밀번호", example = "a1b2c3")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = TokenDto.class)))
+            @ApiResponse(responseCode = "200", description = "로그인 성공")
     })
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<JSONObject> authorize(@Valid @RequestBody LoginDto loginDto) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
@@ -73,9 +74,15 @@ public class AuthController {
 
         String jwt = tokenProvider.createToken(authentication);
 
+        long id = memberService.getMemberByEmail(loginDto.getEmail()).getId();
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("jwt", new TokenDto(jwt));
+
+        return new ResponseEntity<>(jsonObject, httpHeaders, HttpStatus.OK);
     }
 }
