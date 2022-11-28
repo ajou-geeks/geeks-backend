@@ -50,7 +50,7 @@ public class AuthController {
             @Valid @ModelAttribute UserDto userDto
     ) throws IOException {
         String savedName = fileService.saveFile(userDto.getFile());
-        memberService.signup(userDto, savedName);
+        //memberService.signup(userDto, savedName);
         return ResponseEntity.ok().body(userDto.getEmail() + " " + savedName);
     }
 
