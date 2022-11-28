@@ -30,14 +30,14 @@ public class ProductController {
 
     @Operation(summary = "POST() /products", description = "물품 공동구매 생성 API")
     @Parameters({
-            @Parameter(name = "name", description = "물품이름", example = "[폴바셋] 바리스타 돌체라떼 330mL"),
+            @Parameter(name = "name", description = "물품이름", example = "춘식이 바나나우유 500ML x 3개"),
             @Parameter(name = "type1", description = "물품타입", example = "음료"),
-            @Parameter(name = "price", description = "물품가격", example = "3400"),
+            @Parameter(name = "price", description = "물품가격", example = "4950"),
             @Parameter(name = "startTime", description = "시작시각", example = "2022-11-26T11:44:30"),
             @Parameter(name = "endTime", description = "종료시각", example = "2022-12-26T00:00:00"),
-            @Parameter(name = "maxParticipant", description = "최대 참여인원", example = "5"),
+            @Parameter(name = "maxParticipant", description = "최대 참여인원", example = "3"),
             @Parameter(name = "destination", description = "소집장소", example = "남제관"),
-            @Parameter(name = "thumbnailUrl", description = "썸네일 URL", example = "https://geeks-new-bucket.s3.ap-northeast-2.amazonaws.com/image/dolce-latte.jpeg")
+            @Parameter(name = "thumbnailUrl", description = "썸네일 URL", example = "https://geeks-new-bucket.s3.ap-northeast-2.amazonaws.com/image/aaa.jpeg")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = ProductDto.class))),
@@ -52,12 +52,27 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "GET()", description = "index")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "응답 성공")
+    @Operation(summary = "PUT() /products", description = "물품 공동구매 수정 API")
+    @Parameters({
+            @Parameter(name = "name", description = "물품이름", example = "춘식이 초코우유 500ML x 3개"),
+            @Parameter(name = "type1", description = "물품타입", example = "음료"),
+            @Parameter(name = "price", description = "물품가격", example = "4500"),
+            @Parameter(name = "startTime", description = "시작시각", example = "2022-11-26T12:00:00"),
+            @Parameter(name = "endTime", description = "종료시각", example = "2022-12-26T00:00:00"),
+            @Parameter(name = "maxParticipant", description = "최대 참여인원", example = "3"),
+            @Parameter(name = "destination", description = "소집장소", example = "남제관"),
+            @Parameter(name = "thumbnailUrl", description = "썸네일 URL", example = "https://geeks-new-bucket.s3.ap-northeast-2.amazonaws.com/image/bbb.jpeg")
     })
-    @GetMapping("")
-    public String hello() {
-        return "hello";
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") String id, @RequestBody ProductDto input) {
+        UserDto userDto = memberService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.updateProduct(Long.parseLong(id), input, userDto);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional
@@ -36,5 +37,27 @@ public class ProductService {
                 .build();
 
         return ProductDto.from(productRepository.save(product));
+    }
+
+    @Transactional
+    public ProductDto updateProduct(Long id, ProductDto input, UserDto userDto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+
+        // TODO: 공동구매에 이미 참여한 사용자가 있으면 수정 불가
+        // ...
+
+        // JPA 변경감지 사용
+        product.setName(input.getName());
+        product.setType1(ProductType.valueOfTitle(input.getType1()));
+        product.setPrice(input.getPrice());
+        product.setStartTime(LocalDateTime.parse(input.getStartTime(), DateTimeFormatter.ISO_DATE_TIME));
+        product.setEndTime(LocalDateTime.parse(input.getEndTime(), DateTimeFormatter.ISO_DATE_TIME));
+        product.setMaxParticipant(input.getMaxParticipant());
+        product.setDestination(input.getDestination());
+        product.setThumbnailUrl(input.getThumbnailUrl());
+        product.setUpdatedBy(userDto.getId());
+
+        return ProductDto.from(product);
     }
 }
