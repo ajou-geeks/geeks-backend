@@ -7,9 +7,12 @@ create table tbl_member
     email           varchar(300)                                not null,
     password        varchar(300)                                not null,
     profile_image   varchar(255)                                    null,
-    filename        varchar(300)                                not null,
+    filename        varchar(300)                                    null,
     dormitory       varchar(200)                                    null,
-    ho              varchar(20)                                     null
+    ho              varchar(20)                                     null,
+    detail          varchar(1000)                                   null,
+    pattern         varchar(100)                                    null,
+    pattern_detail  varchar(500)                                    null
 
     -- common columns
 --    created_by      bigint unsigned                             not null,

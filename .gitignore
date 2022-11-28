@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### static files ###
+**/src/main/resources/static/**
+**/src/main/resources/files
+
+### pem ###
+geeks.pem

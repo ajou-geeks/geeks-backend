@@ -18,6 +18,8 @@ jwt:
 
 file:
   pdf:
-    dir: /home/gramee/Desktop/geeks-backend/src/main/resources/files/pdf/ # baegyu local
+#    dir: /home/gramee/Desktop/geeks-backend/src/main/resources/files/pdf/ # baegyu local
+    dir: /home/ubuntu/geeks-backend/files/pdf/ # ec2
   txt:
-    dir: /home/gramee/Desktop/geeks-backend/src/main/resources/files/txt/ # baegyu local
+#    dir: /home/gramee/Desktop/geeks-backend/src/main/resources/files/txt/ # baegyu local
+    dir: /home/ubuntu/geeks-backend/files/txt/ # ec2
