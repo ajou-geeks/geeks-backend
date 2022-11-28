@@ -23,7 +23,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDto signup(UserDto userDto) {
+    public UserDto signup(UserDto userDto, String savedName) {
         if (memberRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
@@ -35,6 +35,7 @@ public class MemberService {
         Member member = Member.builder()
                 .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
+                .filename(savedName)
                 .authorities(Collections.singleton(authority))
                 .build();
 

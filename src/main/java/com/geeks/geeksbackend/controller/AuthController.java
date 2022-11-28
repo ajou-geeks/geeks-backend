@@ -5,6 +5,7 @@ import com.geeks.geeksbackend.dto.TokenDto;
 import com.geeks.geeksbackend.dto.UserDto;
 import com.geeks.geeksbackend.jwt.JwtFilter;
 import com.geeks.geeksbackend.jwt.TokenProvider;
+import com.geeks.geeksbackend.service.FileService;
 import com.geeks.geeksbackend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,12 +22,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,21 +34,24 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberService memberService;
+    private final FileService fileService;
 
     @Operation(summary = "POST() /auth/register", description = "회원가입 API")
     @Parameters({
             @Parameter(name = "email", description = "이메일", example = "abc123"),
             @Parameter(name = "password", description = "비밀번호", example = "a1b2c3"),
-            @Parameter(name = "nickname", description = "닉네임", example = "BestDeveloper")
+            @Parameter(name = "file", description = "입사확인서", example = "입사확인서.pdf")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = UserDto.class)))
     })
-    @PostMapping("/register")
-    public ResponseEntity<UserDto> signup(
-            @Valid @RequestBody UserDto userDto
-    ) {
-        return ResponseEntity.ok(memberService.signup(userDto));
+    @PostMapping(value = "/register", consumes = "multipart/form-data")
+    public ResponseEntity<?> signup(
+            @Valid @ModelAttribute UserDto userDto
+    ) throws IOException {
+        String savedName = fileService.saveFile(userDto.getFile());
+        memberService.signup(userDto, savedName);
+        return ResponseEntity.ok().body(userDto.getEmail() + " " + savedName);
     }
 
     @Operation(summary = "POST() /auth/login", description = "로그인 API")

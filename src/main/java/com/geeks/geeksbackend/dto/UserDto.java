@@ -3,6 +3,7 @@ package com.geeks.geeksbackend.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.geeks.geeksbackend.entity.Member;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -24,6 +25,9 @@ public class UserDto {
     @NotNull
     @Size(min = 3, max = 100)
     private String password;
+
+    @NotNull
+    private MultipartFile file;
 
     private Set<AuthorityDto> authorityDtoSet;
 
