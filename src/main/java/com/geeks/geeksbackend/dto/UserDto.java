@@ -39,8 +39,6 @@ public class UserDto {
         return UserDto.builder()
                 .email(member.getEmail())
                 .id(member.getId())
-                .name(member.getName())
-                .nickname(member.getNickname())
                 .authorityDtoSet(member.getAuthorities().stream()
                         .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
                         .collect(Collectors.toSet()))
