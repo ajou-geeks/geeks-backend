@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.entity;
 
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
+import com.geeks.geeksbackend.enumeration.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +23,28 @@ public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
-    private String type1;
+
+    @Enumerated(EnumType.STRING)
+    private ProductType type1;
+
     private int price;
+
+    @Column(name = "start_time")
     private LocalDateTime startTime;
+
+    @Column(name = "end_time")
     private LocalDateTime endTime;
+
+    @Column(name = "max_participant")
     private int maxParticipant;
+
     private String destination;
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
+    @Enumerated(EnumType.STRING)
     private CoBuyStatus status;
-    @OneToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
 }
