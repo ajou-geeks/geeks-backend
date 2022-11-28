@@ -23,8 +23,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDto signup(UserDto userDto) {
-        if (memberRepository.findOneWithAuthoritiesByName(userDto.getName()).orElse(null) != null) {
+    public UserDto signup(UserDto userDto, String savedName) {
+        if (memberRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
@@ -33,9 +33,9 @@ public class MemberService {
                 .build();
 
         Member member = Member.builder()
-                .name(userDto.getName())
+                .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
-                .nickname(userDto.getNickname())
+                .filename(savedName)
                 .authorities(Collections.singleton(authority))
                 .build();
 
@@ -44,14 +44,14 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public UserDto getUserWithAuthorities(String name) {
-        return UserDto.from(memberRepository.findOneWithAuthoritiesByName(name).orElse(null));
+        return UserDto.from(memberRepository.findOneWithAuthoritiesByEmail(name).orElse(null));
     }
 
     @Transactional(readOnly = true)
     public UserDto getMyUserWithAuthorities() {
         return UserDto.from(
                 SecurityUtil.getCurrentUsername()
-                        .flatMap(memberRepository::findOneWithAuthoritiesByName)
+                        .flatMap(memberRepository::findOneWithAuthoritiesByEmail)
                         .orElseThrow(() -> new NotFoundMemberException("Member not found"))
         );
     }

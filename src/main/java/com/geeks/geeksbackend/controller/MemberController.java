@@ -5,14 +5,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "main", description = "비회원 유저 처리 API")
+@Tag(name = "member", description = "회원 관리 API")
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class MemberController {
 
     @Operation(summary = "GET()", description = "index")

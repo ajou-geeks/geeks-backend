@@ -23,15 +23,13 @@ public class Member /*extends BaseEntity */{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String email;
     private String password;
-    private String nickname;
-//    private String email;
-//    private LocalDate birthday;
-//    @Column(name = "profile_image")
-//    private String profileImage;
-//    private String bio;
-//    private String dormitory;
+    @Column(name = "profile_image")
+    private String profileImage;
+    private String filename;
+    private String dormitory;
+    private String ho;
 
     @ManyToMany
     @JoinTable(

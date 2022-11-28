@@ -3,6 +3,7 @@ package com.geeks.geeksbackend.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.geeks.geeksbackend.entity.Member;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,8 +18,8 @@ import java.util.stream.Collectors;
 public class UserDto {
 
     @NotNull
-    @Size(min = 3, max = 50)
-    private String name;
+    @Size(min = 3, max = 100)
+    private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull
@@ -26,8 +27,7 @@ public class UserDto {
     private String password;
 
     @NotNull
-    @Size(min = 3, max = 50)
-    private String nickname;
+    private MultipartFile file;
 
     private Set<AuthorityDto> authorityDtoSet;
 
@@ -35,8 +35,7 @@ public class UserDto {
         if(member == null) return null;
 
         return UserDto.builder()
-                .name(member.getName())
-                .nickname(member.getNickname())
+                .email(member.getEmail())
                 .authorityDtoSet(member.getAuthorities().stream()
                         .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
                         .collect(Collectors.toSet()))
