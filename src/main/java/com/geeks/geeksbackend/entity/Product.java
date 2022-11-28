@@ -1,7 +1,11 @@
 package com.geeks.geeksbackend.entity;
 
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "tbl_product")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product extends BaseEntity {
