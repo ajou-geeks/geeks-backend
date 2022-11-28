@@ -4,14 +4,11 @@ create table tbl_member
     id              bigint unsigned                             not null auto_increment primary key,
 
     -- columns
-    name            varchar(50)                                 not null,
+    email           varchar(300)                                 not null,
     password        varchar(300)                                not null,
-    nickname        varchar(20)                                     null,
---    email           varchar(255)                                not null,
---    birthday        date                                            null,
---    profile_image   varchar(255)                                    null,
---    bio             varchar(255)                                    null,
---    dormitory       varchar(20)                                     null,
+    profile_image   varchar(255)                                    null,
+    dormitory       varchar(200)                                    null,
+    ho              varchar(20)                                     null
 
     -- common columns
 --    created_by      bigint unsigned                             not null,

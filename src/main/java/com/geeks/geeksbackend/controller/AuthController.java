@@ -38,7 +38,7 @@ public class AuthController {
 
     @Operation(summary = "POST() /auth/register", description = "회원가입 API")
     @Parameters({
-            @Parameter(name = "name", description = "아이디", example = "abc123"),
+            @Parameter(name = "email", description = "이메일", example = "abc123"),
             @Parameter(name = "password", description = "비밀번호", example = "a1b2c3"),
             @Parameter(name = "nickname", description = "닉네임", example = "BestDeveloper")
     })
@@ -64,7 +64,7 @@ public class AuthController {
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getName(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
