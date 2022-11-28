@@ -1,7 +1,12 @@
 package com.geeks.geeksbackend.entity;
 
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
-import lombok.*;
+import com.geeks.geeksbackend.enumeration.ProductType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "tbl_product")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product extends BaseEntity {
@@ -18,15 +23,28 @@ public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
-    private String type1;
+
+    @Enumerated(EnumType.STRING)
+    private ProductType type1;
+
     private int price;
+
+    @Column(name = "start_time")
     private LocalDateTime startTime;
+
+    @Column(name = "end_time")
     private LocalDateTime endTime;
+
+    @Column(name = "max_participant")
     private int maxParticipant;
+
     private String destination;
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
+    @Enumerated(EnumType.STRING)
     private CoBuyStatus status;
-    @OneToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
 }
