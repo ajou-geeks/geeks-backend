@@ -1,9 +1,6 @@
 package com.geeks.geeksbackend.service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,21 +22,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
-    @Value("${file.pdf.dir}")
-    private String filePdfDir;
-    @Value("${file.txt.dir}")
-    private String fileTxtDir;
-
+    private final AwsS3Service awsS3Service;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDto signup(UserDto userDto) throws IOException {
+    public UserDto signup(UserDto userDto, String url) throws IOException {
         if (memberRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
@@ -48,12 +43,12 @@ public class MemberService {
                 .authorityName("ROLE_USER")
                 .build();
 
-        FileDto fileDto = saveFile(userDto.getEmail(), userDto.getFile());
+        FileDto fileDto = convertPdfToTxt(convert(userDto.getFile()));
 
         Member member = Member.builder()
                 .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
-                .filename(fileDto.getFilename())
+                .filename(url)
                 .dormitory(fileDto.getDormitory())
                 .ho(fileDto.getHo())
                 .authorities(Collections.singleton(authority))
@@ -62,8 +57,23 @@ public class MemberService {
         return UserDto.from(memberRepository.save(member));
     }
 
-    public Member getMemberByEmail(String email) {
+    public Optional<Member> findById(long id) {
+        return memberRepository.findById(id);
+    }
+    public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
+    }
+
+    public void update(long id, MultipartFile multipartFile, Member member) {
+        Optional<Member> optionalMember = findById(id);
+        optionalMember.ifPresent(m -> {
+            String url = awsS3Service.uploadFileV1(multipartFile);
+            m.setProfileImage(url);
+            m.setDetail(member.getDetail());
+            m.setPattern(member.getPattern());
+            m.setPatternDetail(m.getPatternDetail());
+            memberRepository.save(m);
+        });
     }
 
     @Transactional(readOnly = true)
@@ -80,23 +90,23 @@ public class MemberService {
         );
     }
 
-    public FileDto saveFile(String email, MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return null;
-        }
+//    public String saveFile(MultipartFile file) throws IOException {
+//        if (file.isEmpty()) {
+//            return null;
+//        }
+//
+//        String originalName = file.getOriginalFilename();
+//        String uuid = UUID.randomUUID().toString();
+//        String extension = originalName.substring(originalName.lastIndexOf("."));
+//        String savedName = uuid + extension;
+//        String savedPath = fildDir + savedName;
+//
+//        File createdFile = new File(savedPath);
+//        file.transferTo(createdFile);
+//        return savedName;
+//    }
 
-        String originalName = file.getOriginalFilename();
-        String uuid = UUID.randomUUID().toString();
-        String extension = originalName.substring(originalName.lastIndexOf("."));
-        String savedName = uuid + extension;
-        String savedPath = filePdfDir + savedName;
-
-        File createdFile = new File(savedPath);
-        file.transferTo(createdFile);
-        return convertPdfToTxt(email, savedName, createdFile);
-    }
-
-    public FileDto convertPdfToTxt(String email, String prevName, File file) throws IOException {
+    public FileDto convertPdfToTxt(File file) throws IOException {
         PDDocument pdf = PDDocument.load(file);
         String text = new PDFTextStripper().getText(pdf);
 
@@ -106,25 +116,19 @@ public class MemberService {
         String ho = parsed.split(" ")[1];
 
         FileDto fileDto = FileDto.builder()
-                .filename(prevName)
                 .dormitory(dormitory)
                 .ho(ho)
                 .build();
 
-        String savedName = file.getName();
-        savedName = savedName.substring(0, savedName.lastIndexOf("."));
-        String savedPath = fileTxtDir + savedName + ".txt";
-
-        File createdFile = new File(savedPath);
-        if (!createdFile.exists()) {
-            createdFile.createNewFile();
-        }
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(createdFile, true));
-        bw.write(text);
-        bw.flush();
-        bw.close();
-
         return fileDto;
+    }
+
+    public File convert(MultipartFile multipartFile) throws IOException {
+        File file = new File(multipartFile.getOriginalFilename());
+        file.createNewFile();
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(multipartFile.getBytes());
+        fileOutputStream.close();
+        return file;
     }
 }
