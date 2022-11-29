@@ -11,12 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -24,20 +23,42 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "GET() /member/{id}", description = "마이페이지 조회")
+    @Operation(summary = "GET() /member/{id}", description = "유저 정보 조회")
     @Parameters({
             @Parameter(name = "id", description = "회원 아이디", example = "1")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "마이페이지 조회 성공", content = @Content(schema = @Schema(implementation = Member.class)))
+            @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공", content = @Content(schema = @Schema(implementation = Member.class)))
     })
     @GetMapping("/{id}")
     public ResponseEntity<?> getMember(@PathVariable("id") long id) {
-        return ResponseEntity.ok().body("");
+        return ResponseEntity.ok().body(memberService.findById(id));
+    }
+
+    @Operation(summary = "PATCH() /member/{id}", description = "유저 정보 수정")
+    @Parameters({
+            @Parameter(name = "id", description = "회원 아이디", example = "1"),
+            @Parameter(name = "profile", description = "프로필 사진", example = "abc.jpg"),
+            @Parameter(name = "detail", description = "자기소개", example = "안녕하세요"),
+            @Parameter(name = "pattern", description = "생활패턴", example = "야행성"),
+            @Parameter(name = "patternDetail", description = "생활패턴 설명", example = "새벽 4시에 자는 편입니다.")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "유저 정보 수정 성공")
+    })
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateMember(@PathVariable("id") long id,
+                                          @RequestPart(value = "profile") MultipartFile multipartFile,
+                                          @ModelAttribute Member member) {
+        try {
+            memberService.update(id, multipartFile, member);
+            return ResponseEntity.ok().body("유저 정보 수정 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유저 정보 수정 실패");
+        }
     }
 }

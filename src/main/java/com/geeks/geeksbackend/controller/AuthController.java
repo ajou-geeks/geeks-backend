@@ -5,7 +5,7 @@ import com.geeks.geeksbackend.dto.TokenDto;
 import com.geeks.geeksbackend.dto.UserDto;
 import com.geeks.geeksbackend.jwt.JwtFilter;
 import com.geeks.geeksbackend.jwt.TokenProvider;
-import com.geeks.geeksbackend.service.FileService;
+import com.geeks.geeksbackend.service.AwsS3Service;
 import com.geeks.geeksbackend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Map;
+
 @Tag(name = "auth", description = "인증 관련 API")
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberService memberService;
-    private final FileService fileService;
+    private final AwsS3Service awsS3Service;
 
     @Operation(summary = "POST() /auth/register", description = "회원가입 API")
     @Parameters({
@@ -45,14 +47,18 @@ public class AuthController {
             @Parameter(name = "file", description = "입주확인서", example = "입주확인서.pdf")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = UserDto.class)))
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content)
     })
     @PostMapping(value = "/register", consumes = "multipart/form-data")
     public ResponseEntity<?> signup(
             @Valid @ModelAttribute UserDto userDto
     ) throws IOException {
-        memberService.signup(userDto);
-        return ResponseEntity.ok().body(userDto.getEmail() + " " + userDto.getFile().getOriginalFilename());
+        String url = awsS3Service.uploadFileV1(userDto.getFile());
+        memberService.signup(userDto, url);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("email", userDto.getEmail());
+        jsonObject.put("file", userDto.getFile().getOriginalFilename());
+        return ResponseEntity.ok().body(jsonObject);
     }
 
     @Operation(summary = "POST() /auth/login", description = "로그인 API")
@@ -74,7 +80,7 @@ public class AuthController {
 
         String jwt = tokenProvider.createToken(authentication);
 
-        long id = memberService.getMemberByEmail(loginDto.getEmail()).getId();
+        long id = memberService.findByEmail(loginDto.getEmail()).getId();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
