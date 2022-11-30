@@ -3,12 +3,11 @@ package com.geeks.geeksbackend.service;
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-import com.geeks.geeksbackend.dto.FileDto;
-import com.geeks.geeksbackend.dto.MemberInfoDto;
-import com.geeks.geeksbackend.dto.UserDto;
+import com.geeks.geeksbackend.dto.Member.FileDto;
+import com.geeks.geeksbackend.dto.Member.MemberInfoDto;
+import com.geeks.geeksbackend.dto.Member.UpdateMemberDto;
+import com.geeks.geeksbackend.dto.Member.UserDto;
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.Member;
 import com.geeks.geeksbackend.entity.MemberPattern;
@@ -20,13 +19,10 @@ import com.geeks.geeksbackend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.swing.text.html.Option;
 
 @Service
 @Transactional
@@ -88,12 +84,12 @@ public class MemberService {
         return memberRepository.findByEmail(email);
     }
 
-    public void update(long id, Member member) {
+    public void update(long id, UpdateMemberDto updateMemberDto) {
         Member selectedMember = memberRepository.findById(id);
         if (selectedMember != null) {
-            selectedMember.setDetail(member.getDetail());
-            selectedMember.setPattern(member.getPattern());
-            selectedMember.setPatternDetail(selectedMember.getPatternDetail());
+            selectedMember.setDetail(updateMemberDto.getDetail() == null ? selectedMember.getDetail() : updateMemberDto.getDetail());
+            selectedMember.setPattern(updateMemberDto.getPattern() == null ? selectedMember.getPattern() : updateMemberDto.getPattern());
+            selectedMember.setPatternDetail(updateMemberDto.getPatternDetail() == null ? selectedMember.getPatternDetail() : updateMemberDto.getPatternDetail());
             memberRepository.save(selectedMember);
         }
     }

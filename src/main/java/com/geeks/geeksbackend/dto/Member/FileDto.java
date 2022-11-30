@@ -1,4 +1,4 @@
-package com.geeks.geeksbackend.dto;
+package com.geeks.geeksbackend.dto.Member;
 
 import lombok.*;
 
