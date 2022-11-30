@@ -107,6 +107,29 @@ public class TaxiController {
         }
     }
 
+    @Operation(summary = "PATCH() /taxi/complete", description = "택시 공동구매 마감 API")
+    @Parameters({
+            @Parameter(name = "id", description = "택시 공동구매 아이디", example = "1"),
+            @Parameter(name = "userId", description = "공동구매를 취소하고자 하는 유저의 아이디", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "택시 공동구매 마감 완료", content = @Content(schema = @Schema(implementation = Taxi.class))),
+            @ApiResponse(responseCode = "400", description = "택시 공동구매 마감 실패")
+    })
+    @PatchMapping("/complete")
+    public ResponseEntity<?> completeTaxi(@RequestBody ChangeDto changeDto) {
+        try {
+            boolean success = taxiService.completeTaxi(changeDto);
+            if (success) {
+                return ResponseEntity.ok().body("택시 공동구매 마감 완료");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("공동구매 생성자만 공동구매를 마감할 수 있습니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("택시 공동구매 마감 실패");
+        }
+    }
+
     @Operation(summary = "POST() /taxi/join", description = "택시 공동구매 참여 API")
     @Parameters({
             @Parameter(name = "id", description = "택시 아이디", example = "1"),
