@@ -17,4 +17,4 @@ create table tbl_member_pattern
     ) engine = InnoDB
     default charset = utf8mb4
     collate = utf8mb4_unicode_ci
-    comment = 'member table';
+    comment = 'member pattern table';

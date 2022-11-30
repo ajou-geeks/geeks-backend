@@ -10,8 +10,6 @@ import com.geeks.geeksbackend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Map;
 
 @Tag(name = "auth", description = "인증 관련 API")
 @RestController
@@ -47,7 +44,7 @@ public class AuthController {
             @Parameter(name = "file", description = "입주확인서", example = "입주확인서.pdf")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content)
+            @ApiResponse(responseCode = "200", description = "회원가입 성공")
     })
     @PostMapping(value = "/register", consumes = "multipart/form-data")
     public ResponseEntity<?> signup(

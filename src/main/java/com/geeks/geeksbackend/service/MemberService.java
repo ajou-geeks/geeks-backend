@@ -2,15 +2,19 @@ package com.geeks.geeksbackend.service;
 
 import java.io.*;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.geeks.geeksbackend.dto.FileDto;
+import com.geeks.geeksbackend.dto.MemberInfoDto;
 import com.geeks.geeksbackend.dto.UserDto;
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.Member;
+import com.geeks.geeksbackend.entity.MemberPattern;
 import com.geeks.geeksbackend.exception.DuplicateMemberException;
 import com.geeks.geeksbackend.exception.NotFoundMemberException;
+import com.geeks.geeksbackend.repository.MemberPatternRepository;
 import com.geeks.geeksbackend.repository.MemberRepository;
 import com.geeks.geeksbackend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,7 @@ public class MemberService {
 
     private final AwsS3Service awsS3Service;
     private final MemberRepository memberRepository;
+    private final MemberPatternRepository memberPatternRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -57,28 +62,54 @@ public class MemberService {
         return UserDto.from(memberRepository.save(member));
     }
 
-    public Optional<Member> findById(long id) {
-        return memberRepository.findById(id);
+    public MemberInfoDto findById(long id) {
+        Member member = memberRepository.findById(id);
+        List<MemberPattern> memberPatterns = memberPatternRepository.findAllById(id);
+        if (member != null) {
+            MemberInfoDto memberInfoDto = MemberInfoDto.builder()
+                    .id(member.getId())
+                    .password(null)
+                    .email(member.getEmail())
+                    .profileImage(member.getProfileImage())
+                    .filename(member.getFilename())
+                    .dormitory(member.getDormitory())
+                    .ho(member.getHo())
+                    .detail(member.getDetail())
+                    .pattern(member.getPattern())
+                    .patternDetail(member.getPatternDetail())
+                    .authorities(member.getAuthorities())
+                    .memberPatterns(memberPatterns)
+                    .build();
+            return memberInfoDto;
+        }
+        return null;
     }
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
-    public void update(long id, MultipartFile multipartFile, Member member) {
-        Optional<Member> optionalMember = findById(id);
-        optionalMember.ifPresent(m -> {
+    public void update(long id, Member member) {
+        Member selectedMember = memberRepository.findById(id);
+        if (selectedMember != null) {
+            selectedMember.setDetail(member.getDetail());
+            selectedMember.setPattern(member.getPattern());
+            selectedMember.setPatternDetail(selectedMember.getPatternDetail());
+            memberRepository.save(selectedMember);
+        }
+    }
+
+    public void update(long id, MultipartFile multipartFile) {
+        Member selectedMember = memberRepository.findById(id);
+        if (selectedMember != null) {
             String url = awsS3Service.uploadFileV1(multipartFile);
-            m.setProfileImage(url);
-            m.setDetail(member.getDetail());
-            m.setPattern(member.getPattern());
-            m.setPatternDetail(m.getPatternDetail());
-            memberRepository.save(m);
-        });
+            selectedMember.setProfileImage(url);
+            memberRepository.save(selectedMember);
+        }
     }
 
     @Transactional(readOnly = true)
-    public UserDto getUserWithAuthorities(String name) {
-        return UserDto.from(memberRepository.findOneWithAuthoritiesByEmail(name).orElse(null));
+    public UserDto getUserWithAuthorities(String email) {
+        return UserDto.from(memberRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
     }
 
     @Transactional(readOnly = true)
@@ -89,22 +120,6 @@ public class MemberService {
                         .orElseThrow(() -> new NotFoundMemberException("Member not found"))
         );
     }
-
-//    public String saveFile(MultipartFile file) throws IOException {
-//        if (file.isEmpty()) {
-//            return null;
-//        }
-//
-//        String originalName = file.getOriginalFilename();
-//        String uuid = UUID.randomUUID().toString();
-//        String extension = originalName.substring(originalName.lastIndexOf("."));
-//        String savedName = uuid + extension;
-//        String savedPath = fildDir + savedName;
-//
-//        File createdFile = new File(savedPath);
-//        file.transferTo(createdFile);
-//        return savedName;
-//    }
 
     public FileDto convertPdfToTxt(File file) throws IOException {
         PDDocument pdf = PDDocument.load(file);
