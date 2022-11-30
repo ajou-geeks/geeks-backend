@@ -25,6 +25,9 @@ public class AwsS3Service {
     private String bucketName;
 
     public String uploadFileV1(MultipartFile multipartFile) {
+        if (multipartFile == null) {
+            return null;
+        }
         String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
