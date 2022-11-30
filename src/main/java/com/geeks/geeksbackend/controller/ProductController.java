@@ -70,9 +70,9 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") String id, @RequestBody ProductDto input) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto input) {
         UserDto userDto = memberService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.updateProduct(Long.parseLong(id), input, userDto);
+        ProductDto productDto = productService.updateProduct(id, input, userDto);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
@@ -84,9 +84,9 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteProduct(@PathVariable("id") String id) {
+    public ResponseEntity deleteProduct(@PathVariable("id") Long id) {
         UserDto userDto = memberService.getMyUserWithAuthorities();
-        productService.deleteProduct(Long.parseLong(id), userDto);
+        productService.deleteProduct(id, userDto);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }
