@@ -1,7 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.Member.MemberInfoDto;
-import com.geeks.geeksbackend.dto.Member.UpdateMemberDto;
+import com.geeks.geeksbackend.dto.member.MemberInfoDto;
+import com.geeks.geeksbackend.dto.member.UpdateMemberDto;
 import com.geeks.geeksbackend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

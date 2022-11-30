@@ -4,10 +4,10 @@ import java.io.*;
 import java.util.Collections;
 import java.util.List;
 
-import com.geeks.geeksbackend.dto.Member.FileDto;
-import com.geeks.geeksbackend.dto.Member.MemberInfoDto;
-import com.geeks.geeksbackend.dto.Member.UpdateMemberDto;
-import com.geeks.geeksbackend.dto.Member.UserDto;
+import com.geeks.geeksbackend.dto.member.FileDto;
+import com.geeks.geeksbackend.dto.member.MemberInfoDto;
+import com.geeks.geeksbackend.dto.member.UpdateMemberDto;
+import com.geeks.geeksbackend.dto.member.UserDto;
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.Member;
 import com.geeks.geeksbackend.entity.MemberPattern;

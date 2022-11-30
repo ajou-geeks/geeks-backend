@@ -1,8 +1,8 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.Member.LoginDto;
+import com.geeks.geeksbackend.dto.member.LoginDto;
 import com.geeks.geeksbackend.dto.jwt.TokenDto;
-import com.geeks.geeksbackend.dto.Member.UserDto;
+import com.geeks.geeksbackend.dto.member.UserDto;
 import com.geeks.geeksbackend.jwt.JwtFilter;
 import com.geeks.geeksbackend.jwt.TokenProvider;
 import com.geeks.geeksbackend.service.AwsS3Service;
