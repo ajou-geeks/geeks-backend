@@ -5,4 +5,5 @@ import com.geeks.geeksbackend.entity.Taxi;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TaxiRepository extends JpaRepository<Taxi, Long> {
+    Taxi findOneById(long id);
 }

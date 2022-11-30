@@ -1,4 +1,4 @@
-package com.geeks.geeksbackend.dto.Member;
+package com.geeks.geeksbackend.dto.member;
 
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.MemberPattern;

@@ -22,16 +22,16 @@ public class Taxi extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String type1;
-    private int price;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private int maxParticipant;
-    private String source;
-    private String destination;
-    private CoBuyStatus status;
-    @OneToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column(name = "user_id")
+    private Long userId;                    // 공동구매 생성 유저
+    private int price;                      // 예상 가격
+    @Column(name = "start_time")
+    private LocalDateTime startTime;        // 출발 예정 시간
+    @Column(name = "end_time")
+    private LocalDateTime endTime;          // 공동구매 마감 시간
+    @Column(name = "max_participant")
+    private int maxParticipant;             // 최대 인원
+    private String source;                  // 출발지
+    private String destination;             // 도착지
+    private CoBuyStatus status;             // 공동구매 상태
 }

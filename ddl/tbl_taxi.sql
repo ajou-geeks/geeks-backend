@@ -4,14 +4,13 @@ create table tbl_taxi
     id              bigint unsigned                             not null auto_increment primary key,
 
     -- columns
-    name            varchar(50)                                 not null,
-    type1           varchar(20)                                 not null,
+    user_id         bigint unsigned                             not null,
     price           int                                         not null,
-    start_time      timestamp       default current_timestamp   not null,
-    end_time        timestamp                                       null,
+    start_time      timestamp                                   not null,
+    end_time        timestamp                                   not null,
     max_participant int                                         not null,
-    destination     varchar(10)                                     null,
-    thumbnail_url   varchar(255)                                    null,
+    source          varchar(200)                                not null,
+    destination     varchar(200)                                not null,
     status          varchar(20)                                 not null,
 
     -- common columns
