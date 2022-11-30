@@ -81,6 +81,20 @@ public class TaxiService {
         return false;
     }
 
+    public boolean completeTaxi(ChangeDto changeDto) {
+        Taxi taxi = taxiRepository.findOneById(changeDto.getId());
+        if (taxi != null) {
+            if (taxi.getUserId() != changeDto.getUserId()) {
+                return false;
+            }
+            taxi.setStatus(CoBuyStatus.COMPLETE);;
+            taxi.setUpdatedAt(LocalDateTime.now());
+            taxiRepository.save(taxi);
+            return true;
+        }
+        return false;
+    }
+
     /**
      *
      * @param changeDto
