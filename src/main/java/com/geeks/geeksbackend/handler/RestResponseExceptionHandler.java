@@ -3,7 +3,7 @@ package com.geeks.geeksbackend.handler;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
-import com.geeks.geeksbackend.dto.ErrorDto;
+import com.geeks.geeksbackend.dto.jwt.ErrorDto;
 import com.geeks.geeksbackend.exception.DuplicateMemberException;
 import com.geeks.geeksbackend.exception.NotFoundMemberException;
 import org.springframework.security.access.AccessDeniedException;

@@ -1,8 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.MemberInfoDto;
-import com.geeks.geeksbackend.dto.UserDto;
-import com.geeks.geeksbackend.entity.Member;
+import com.geeks.geeksbackend.dto.Member.MemberInfoDto;
+import com.geeks.geeksbackend.dto.Member.UpdateMemberDto;
 import com.geeks.geeksbackend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,11 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Optional;
 
 @Tag(name = "member", description = "유저 관련 API")
 @RestController
@@ -54,9 +50,9 @@ public class MemberController {
     })
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateMember(@PathVariable("id") long id,
-                                          @RequestBody Member member) {
+                                          @RequestBody UpdateMemberDto updateMemberDto) {
         try {
-            memberService.update(id, member);
+            memberService.update(id, updateMemberDto);
             return ResponseEntity.ok().body("유저 정보 수정 성공");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유저 정보 수정 실패");
