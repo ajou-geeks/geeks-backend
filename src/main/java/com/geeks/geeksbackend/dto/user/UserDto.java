@@ -1,7 +1,7 @@
-package com.geeks.geeksbackend.dto.member;
+package com.geeks.geeksbackend.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.geeks.geeksbackend.entity.Member;
+import com.geeks.geeksbackend.entity.User;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,13 +33,13 @@ public class UserDto {
 
     private Set<AuthorityDto> authorityDtoSet;
 
-    public static UserDto from(Member member) {
-        if(member == null) return null;
+    public static UserDto from(User user) {
+        if(user == null) return null;
 
         return UserDto.builder()
-                .email(member.getEmail())
-                .id(member.getId())
-                .authorityDtoSet(member.getAuthorities().stream()
+                .email(user.getEmail())
+                .id(user.getId())
+                .authorityDtoSet(user.getAuthorities().stream()
                         .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
                         .collect(Collectors.toSet()))
                 .build();

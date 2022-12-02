@@ -1,4 +1,4 @@
-create table tbl_member_pattern
+create table tbl_user_pattern
 (
     -- primary key
     id              bigint unsigned                             not null,
@@ -17,4 +17,4 @@ create table tbl_member_pattern
     ) engine = InnoDB
     default charset = utf8mb4
     collate = utf8mb4_unicode_ci
-    comment = 'member pattern table';
+    comment = 'user pattern table';

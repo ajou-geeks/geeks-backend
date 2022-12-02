@@ -3,23 +3,24 @@ package com.geeks.geeksbackend.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "tbl_member")
+@Table(name = "tbl_user")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member /*extends BaseEntity */{
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     private String password;
+    private String name;
+    private String nickname;
     @Column(name = "profile_image")
     private String profileImage;    // 프로필 사진 파일 이름
     private String filename;        // 입주확인서 파일 이름

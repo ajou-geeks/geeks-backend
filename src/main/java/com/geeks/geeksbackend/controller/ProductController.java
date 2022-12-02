@@ -1,8 +1,8 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.ProductDto;
-import com.geeks.geeksbackend.dto.member.UserDto;
-import com.geeks.geeksbackend.service.MemberService;
+import com.geeks.geeksbackend.dto.product.ProductDto;
+import com.geeks.geeksbackend.dto.user.UserDto;
+import com.geeks.geeksbackend.service.UserService;
 import com.geeks.geeksbackend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final MemberService memberService;
+    private final UserService userService;
 
     @Operation(summary = "POST() /products", description = "물품 공동구매 생성 API")
     @Parameters({
@@ -47,12 +47,12 @@ public class ProductController {
     })
     @PostMapping("")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto input) {
-        UserDto userDto = memberService.getMyUserWithAuthorities();
+        UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.createProduct(input, userDto);
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "PUT() /products", description = "물품 공동구매 수정 API")
+    @Operation(summary = "PUT() /products/{id}", description = "물품 공동구매 수정 API")
     @Parameters({
             @Parameter(name = "name", description = "물품이름", example = "춘식이 초코우유 500ML x 3개"),
             @Parameter(name = "type1", description = "물품타입", example = "음료"),
@@ -71,12 +71,12 @@ public class ProductController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto input) {
-        UserDto userDto = memberService.getMyUserWithAuthorities();
+        UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.updateProduct(id, input, userDto);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "DELETE() /products", description = "물품 공동구매 삭제 API")
+    @Operation(summary = "DELETE() /products/{id}", description = "물품 공동구매 삭제 API")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "NO CONTENT"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -85,7 +85,7 @@ public class ProductController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity deleteProduct(@PathVariable("id") Long id) {
-        UserDto userDto = memberService.getMyUserWithAuthorities();
+        UserDto userDto = userService.getMyUserWithAuthorities();
         productService.deleteProduct(id, userDto);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

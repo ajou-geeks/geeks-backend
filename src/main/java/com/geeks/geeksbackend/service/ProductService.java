@@ -1,7 +1,7 @@
 package com.geeks.geeksbackend.service;
 
-import com.geeks.geeksbackend.dto.ProductDto;
-import com.geeks.geeksbackend.dto.member.UserDto;
+import com.geeks.geeksbackend.dto.product.ProductDto;
+import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.ProductType;

@@ -1,4 +1,4 @@
-create table tbl_taxi_member
+create table tbl_taxi_user
 (
     -- primary key
     id              bigint unsigned                             not null auto_increment primary key,
@@ -10,4 +10,4 @@ create table tbl_taxi_member
     ) engine = InnoDB
     default charset = utf8mb4
     collate = utf8mb4_unicode_ci
-    comment = 'taxi member table';
+    comment = 'taxi user table';

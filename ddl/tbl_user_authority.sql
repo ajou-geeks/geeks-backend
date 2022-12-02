@@ -7,4 +7,4 @@ create table tbl_user_authority
     ) engine = InnoDB
     default charset = utf8mb4
     collate = utf8mb4_unicode_ci
-    comment = 'user_authority table';
+    comment = 'user authority table';

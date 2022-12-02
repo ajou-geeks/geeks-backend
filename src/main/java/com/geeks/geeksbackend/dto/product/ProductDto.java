@@ -1,10 +1,8 @@
-package com.geeks.geeksbackend.dto;
+package com.geeks.geeksbackend.dto.product;
 
 import com.geeks.geeksbackend.entity.Product;
 import lombok.*;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.format.DateTimeFormatter;

@@ -1,19 +1,19 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.entity.idclass.MemberPatternPK;
+import com.geeks.geeksbackend.entity.idclass.UserPatternPK;
 import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tbl_member_pattern")
+@Table(name = "tbl_user_pattern")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@IdClass(MemberPatternPK.class)
-public class MemberPattern {
+@IdClass(UserPatternPK.class)
+public class UserPattern {
     @Id
     private long id;
     @Id

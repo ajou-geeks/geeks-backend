@@ -1,8 +1,8 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.member.MemberInfoDto;
-import com.geeks.geeksbackend.dto.member.UpdateMemberDto;
-import com.geeks.geeksbackend.service.MemberService;
+import com.geeks.geeksbackend.dto.user.UserInfoDto;
+import com.geeks.geeksbackend.dto.user.UpdateUserDto;
+import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -17,27 +17,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "member", description = "유저 관련 API")
+@Tag(name = "user", description = "유저 관련 API")
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/user")
 @RequiredArgsConstructor
-public class MemberController {
+public class UserController {
 
-    private final MemberService memberService;
+    private final UserService userService;
 
-    @Operation(summary = "GET() /member/{id}", description = "유저 정보 조회")
+    @Operation(summary = "GET() /user/{id}", description = "유저 정보 조회")
     @Parameters({
             @Parameter(name = "id", description = "회원 아이디", example = "1")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공", content = @Content(schema = @Schema(implementation = MemberInfoDto.class)))
+            @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공", content = @Content(schema = @Schema(implementation = UserInfoDto.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getMember(@PathVariable(value = "id", required = false) long id) {
-        return ResponseEntity.ok().body(memberService.findById(id));
+    public ResponseEntity<?> getUser(@PathVariable(value = "id", required = false) long id) {
+        return ResponseEntity.ok().body(userService.findById(id));
     }
 
-    @Operation(summary = "PATCH() /member/{id}", description = "유저 정보 수정")
+    @Operation(summary = "PATCH() /user/{id}", description = "유저 정보 수정")
     @Parameters({
             @Parameter(name = "id", description = "회원 아이디", example = "1"),
             @Parameter(name = "detail", description = "자기소개", example = "안녕하세요"),
@@ -49,17 +49,17 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "유저 정보 수정 실패")
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateMember(@PathVariable("id") long id,
-                                          @RequestBody UpdateMemberDto updateMemberDto) {
+    public ResponseEntity<?> updateUser(@PathVariable("id") long id,
+                                          @RequestBody UpdateUserDto updateUserDto) {
         try {
-            memberService.update(id, updateMemberDto);
+            userService.update(id, updateUserDto);
             return ResponseEntity.ok().body("유저 정보 수정 성공");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유저 정보 수정 실패");
         }
     }
 
-    @Operation(summary = "PATCH() /member/profile/{id}", description = "유저 프로필 이미지 수정")
+    @Operation(summary = "PATCH() /user/profile/{id}", description = "유저 프로필 이미지 수정")
     @Parameters({
             @Parameter(name = "id", description = "회원 아이디", example = "1"),
             @Parameter(name = "profile", description = "프로필 사진", example = "abc.jpg")
@@ -72,7 +72,7 @@ public class MemberController {
     public ResponseEntity<?> updateProfile(@PathVariable("id") long id,
                                            @RequestPart(value = "profile") MultipartFile multipartFile) {
         try {
-            memberService.update(id, multipartFile);
+            userService.update(id, multipartFile);
             return ResponseEntity.ok().body("유저 프로필 이미지 수정 성공");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유저 프로필 이미지 수정 실패");
