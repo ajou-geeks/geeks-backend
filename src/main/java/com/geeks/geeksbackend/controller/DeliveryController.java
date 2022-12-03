@@ -182,4 +182,23 @@ public class DeliveryController {
         DeliveryDto deliveryDto = deliveryService.settleDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "POST() /delivery/receive", description = "배달음식 공동구매 수령 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "pickupLocation", description = "수령장소", example = "일신관 로비"),
+            @Parameter(name = "pickupDatetime", description = "수령일자", example = "2022-11-27T18:00:00")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/receive")
+    public ResponseEntity<DeliveryDto> receiveDelivery(@RequestBody DeliveryReceiveDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.receiveDelivery(input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
 }

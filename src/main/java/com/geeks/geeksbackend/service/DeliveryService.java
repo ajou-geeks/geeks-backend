@@ -209,4 +209,28 @@ public class DeliveryService {
 
         return DeliveryDto.from(delivery);
     }
+
+    public DeliveryDto receiveDelivery(DeliveryReceiveDto input, Long userId) {
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(input.getId(), userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Delivery delivery = deliveryUser.getDelivery();
+
+        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.SETTLE) {
+            throw new RuntimeException("수령할 수 없는 공동구매 입니다.");
+        }
+
+        delivery.setPickupLocation(input.getPickupLocation());
+        delivery.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
+        delivery.setStatus(CoBuyStatus.RECEIVE);
+
+        // TODO: 공동구매 참여자들에게 수령 알림 전송
+        // ...
+
+        return DeliveryDto.from(delivery);
+    }
 }
