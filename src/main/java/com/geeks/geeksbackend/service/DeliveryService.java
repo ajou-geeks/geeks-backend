@@ -4,6 +4,7 @@ import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
 import com.geeks.geeksbackend.entity.Delivery;
 import com.geeks.geeksbackend.entity.DeliveryUser;
 import com.geeks.geeksbackend.entity.User;
+import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
 import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.CoBuyUserType;
@@ -127,8 +128,8 @@ public class DeliveryService {
                 .build();
     }
 
-    public DeliveryDto joinDelivery(Long deliveryId, Long userId) {
-        Delivery delivery = deliveryRepository.findById(deliveryId)
+    public DeliveryDto joinDelivery(DeliveryJoinDto input, Long userId) {
+        Delivery delivery = deliveryRepository.findById(input.getId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
@@ -151,6 +152,8 @@ public class DeliveryService {
                 .delivery(delivery)
                 .user(user)
                 .type(CoBuyUserType.MEMBER)
+                .amount(input.getAmount())
+                .description(input.getDescription())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

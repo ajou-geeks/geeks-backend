@@ -2,6 +2,7 @@ package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
 import com.geeks.geeksbackend.dto.delivery.DeliveryIdDto;
+import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
 import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
 import com.geeks.geeksbackend.service.DeliveryService;
 import com.geeks.geeksbackend.service.UserService;
@@ -128,7 +129,9 @@ public class DeliveryController {
 
     @Operation(summary = "POST() /delivery/join", description = "배달음식 공동구매 참여 API")
     @Parameters({
-            @Parameter(name = "id", description = "배달음식ID", example = "1")
+            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "amount", description = "주문금액", example = "7000"),
+            @Parameter(name = "description", description = "주문상세", example = "떡볶이 1개, 참치마요김밥 1개")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
@@ -137,9 +140,9 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/join")
-    public ResponseEntity<DeliveryDto> joinDelivery(@RequestBody DeliveryIdDto input) {
+    public ResponseEntity<DeliveryDto> joinDelivery(@RequestBody DeliveryJoinDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
-        DeliveryDto deliveryDto = deliveryService.joinDelivery(input.getId(), userId);
+        DeliveryDto deliveryDto = deliveryService.joinDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
 }

@@ -27,6 +27,8 @@ public class DeliveryUser extends BaseEntity {
 
     private int amount;
 
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
