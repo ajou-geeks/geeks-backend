@@ -7,12 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tbl_delivery")
+@SQLDelete(sql = "update tbl_delivery set deleted = true, deleted_at = now() where id = ?")
+@Where(clause = "deleted = false")
 @Getter
 @Setter
 @SuperBuilder

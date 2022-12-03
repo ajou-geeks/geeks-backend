@@ -74,4 +74,17 @@ public class DeliveryController {
         DeliveryDto deliveryDto = deliveryService.updateDelivery(id, input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "DELETE() /delivery/{id}", description = "배달음식 공동구매 삭제 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "NO CONTENT"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteDelivery(@PathVariable("id") Long id) {
+        deliveryService.deleteDelivery(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 }

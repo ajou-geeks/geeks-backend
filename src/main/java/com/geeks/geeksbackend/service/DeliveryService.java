@@ -83,4 +83,11 @@ public class DeliveryService {
 
         return DeliveryDto.from(delivery);
     }
+
+    public void deleteDelivery(Long id) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+
+        deliveryRepository.delete(delivery);
+    }
 }
