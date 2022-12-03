@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
+import com.geeks.geeksbackend.dto.product.ProductListDto;
 import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.service.UserService;
 import com.geeks.geeksbackend.service.ProductService;
@@ -14,6 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -101,5 +105,25 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProduct(@PathVariable("id") Long id) {
         ProductDto productDto = productService.getProduct(id);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "GET() /product/list", description = "물품 공동구매 목록 조회 API")
+    @Parameters({
+            @Parameter(name = "page",  description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
+            @Parameter(name = "count", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
+            @Parameter(name = "sort",  description = "정렬 방법", example = "recent"),
+            @Parameter(name = "query", description = "검색할 내용", example = "우유"),
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @ Schema(implementation = ProductListDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/list")
+    public ResponseEntity<ProductListDto> getProductList(
+            @RequestParam String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        ProductListDto productListDto = productService.getProductList(query, pageable);
+        return new ResponseEntity<>(productListDto, HttpStatus.OK);
     }
 }

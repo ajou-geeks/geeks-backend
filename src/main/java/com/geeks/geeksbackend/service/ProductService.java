@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
+import com.geeks.geeksbackend.dto.product.ProductListDto;
 import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
@@ -8,12 +9,15 @@ import com.geeks.geeksbackend.enumeration.ProductType;
 import com.geeks.geeksbackend.repository.ProductRepository;
 import com.geeks.geeksbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -78,5 +82,16 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
 
         return ProductDto.from(product);
+    }
+
+    public ProductListDto getProductList(String query, Pageable pageable) {
+        Page<Product> page = productRepository.findByNameContains(query, pageable);
+
+        return ProductListDto.builder()
+                .totalCount(page.getTotalElements())
+                .elements(page.getContent().stream()
+                        .map(ProductDto::from)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }
