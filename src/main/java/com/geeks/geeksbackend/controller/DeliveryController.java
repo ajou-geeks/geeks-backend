@@ -1,9 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryIdDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
+import com.geeks.geeksbackend.dto.delivery.*;
+import com.geeks.geeksbackend.entity.Delivery;
 import com.geeks.geeksbackend.service.DeliveryService;
 import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -199,6 +197,23 @@ public class DeliveryController {
     public ResponseEntity<DeliveryDto> receiveDelivery(@RequestBody DeliveryReceiveDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         DeliveryDto deliveryDto = deliveryService.receiveDelivery(input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /delivery/confirm", description = "배달음식 공동구매 완료 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/confirm")
+    public ResponseEntity<DeliveryDto> confirmDelivery(@RequestBody DeliveryIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.confirmDelivery(input.getId(), userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
 }

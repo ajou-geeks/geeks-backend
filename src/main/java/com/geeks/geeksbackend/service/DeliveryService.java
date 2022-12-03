@@ -1,11 +1,7 @@
 package com.geeks.geeksbackend.service;
 
-import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
-import com.geeks.geeksbackend.entity.Delivery;
-import com.geeks.geeksbackend.entity.DeliveryUser;
-import com.geeks.geeksbackend.entity.User;
-import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
+import com.geeks.geeksbackend.dto.delivery.*;
+import com.geeks.geeksbackend.entity.*;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.CoBuyUserType;
 import com.geeks.geeksbackend.enumeration.DeliveryType;
@@ -230,6 +226,25 @@ public class DeliveryService {
 
         // TODO: 공동구매 참여자들에게 수령 알림 전송
         // ...
+
+        return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryDto confirmDelivery(Long deliveryId, Long userId) {
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(deliveryId, userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Delivery delivery = deliveryUser.getDelivery();
+
+        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.RECEIVE) {
+            throw new RuntimeException("완료할 수 없는 공동구매 입니다.");
+        }
+
+        delivery.setStatus(CoBuyStatus.COMPLETE);
 
         return DeliveryDto.from(delivery);
     }
