@@ -50,4 +50,28 @@ public class DeliveryController {
         DeliveryDto deliveryDto = deliveryService.createDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "PUT() /delivery/{id}", description = "배달음식 공동구매 수정 API")
+    @Parameters({
+            @Parameter(name = "name", description = "배달음식 이름", example = "김밥천국 아주대점"),
+            @Parameter(name = "type1", description = "배달음식 타입", example = "분식"),
+            @Parameter(name = "minAmount", description = "최소주문금액", example = "15000"),
+            @Parameter(name = "amount", description = "주문금액", example = "6500"),
+            @Parameter(name = "startTime", description = "시작시각", example = "2022-11-26T11:00:00"),
+            @Parameter(name = "endTime", description = "종료시각", example = "2022-11-26 12:30:00"),
+            @Parameter(name = "destination", description = "소집장소", example = "남제관"),
+            @Parameter(name = "thumbnailUrl", description = "썸네일 URL", example = "https://geeks-new-bucket.s3.ap-northeast-2.amazonaws.com/image/aaa.jpeg")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<DeliveryDto> updateProduct(@PathVariable("id") Long id, @RequestBody DeliveryDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.updateDelivery(id, input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
 }
