@@ -137,7 +137,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/join")
-    public ResponseEntity<ProductDto> joinProduct(@RequestBody ProductJoinDto input) {
+    public ResponseEntity<ProductDto> joinProduct(@RequestBody ProductIdDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.joinProduct(input.getId(), userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.OK);
@@ -154,7 +154,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/cancel")
-    public ResponseEntity<ProductDto> cancelProduct(@RequestBody ProductCancelDto input) {
+    public ResponseEntity<ProductDto> cancelProduct(@RequestBody ProductIdDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.cancelProduct(input.getId(), userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.OK);
@@ -197,6 +197,23 @@ public class ProductController {
     public ResponseEntity<ProductDto> receiveProduct(@RequestBody ProductReceiveDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.receiveProduct(input, userDto.getId());
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/confirm", description = "물품 공동구매 완료 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/confirm")
+    public ResponseEntity<ProductDto> confirmProduct(@RequestBody ProductIdDto input) {
+        UserDto userDto = userService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.confirmProduct(input.getId(), userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }

@@ -190,7 +190,7 @@ public class ProductService {
         Product product = productUser.getProduct();
 
         if (productUser.getType() != CoBuyUserType.MANAGER) {
-            throw new RuntimeException("공동구매 참여자는 정산할 수 없습니다.");
+            throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
         }
 
         if (product.getStatus() != CoBuyStatus.CLOSE) {
@@ -216,11 +216,11 @@ public class ProductService {
         Product product = productUser.getProduct();
 
         if (productUser.getType() != CoBuyUserType.MANAGER) {
-            throw new RuntimeException("공동구매 참여자는 수령 정보를 작성할 수 없습니다.");
+            throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
         }
 
         if (product.getStatus() != CoBuyStatus.SETTLE) {
-            throw new RuntimeException("수령 정보를 작성할 수 없는 공동구매 입니다.");
+            throw new RuntimeException("수령할 수 없는 공동구매 입니다.");
         }
 
         product.setPickupLocation(input.getPickupLocation());
@@ -229,6 +229,25 @@ public class ProductService {
 
         // TODO: 공동구매 참여자들에게 정산 알림 전송
         // ...
+
+        return ProductDto.from(product);
+    }
+
+    public ProductDto confirmProduct(Long productId, Long userId) {
+        ProductUser productUser = productUserRepository.findByProductIdAndUserId(productId, userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Product product = productUser.getProduct();
+
+        if (productUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
+        }
+
+        if (product.getStatus() != CoBuyStatus.RECEIVE) {
+            throw new RuntimeException("완료할 수 없는 공동구매 입니다.");
+        }
+
+        product.setStatus(CoBuyStatus.COMPLETE);
 
         return ProductDto.from(product);
     }
