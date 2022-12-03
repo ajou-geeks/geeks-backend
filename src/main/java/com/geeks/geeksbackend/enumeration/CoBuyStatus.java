@@ -14,6 +14,7 @@ public enum CoBuyStatus {
     CLOSE("모집완료"),
     EXPIRE("모집만료"),
     SETTLE("정산중"),
+    RECEIVE("수령중"),
     COMPLETE("완료"),
     ERROR("에러");
 

@@ -2,6 +2,7 @@ package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
+import com.geeks.geeksbackend.dto.product.ProductReceiveDto;
 import com.geeks.geeksbackend.dto.product.ProductSettleDto;
 import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.entity.User;
@@ -201,6 +202,30 @@ public class ProductService {
         product.setTotalAmount(input.getTotalAmount());
         product.setAmount(input.getAmount());
         product.setStatus(CoBuyStatus.SETTLE);
+
+        // TODO: 공동구매 참여자들에게 정산 알림 전송
+        // ...
+
+        return ProductDto.from(product);
+    }
+
+    public ProductDto receiveProduct(ProductReceiveDto input, Long userId) {
+        ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Product product = productUser.getProduct();
+
+        if (productUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 참여자는 수령 정보를 작성할 수 없습니다.");
+        }
+
+        if (product.getStatus() != CoBuyStatus.SETTLE) {
+            throw new RuntimeException("수령 정보를 작성할 수 없는 공동구매 입니다.");
+        }
+
+        product.setPickupLocation(input.getPickupLocation());
+        product.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
+        product.setStatus(CoBuyStatus.RECEIVE);
 
         // TODO: 공동구매 참여자들에게 정산 알림 전송
         // ...

@@ -19,6 +19,8 @@ create table tbl_product
     account_number  varchar(20)                                     null,
     total_amount    int             default 0                       null,
     amount          int             default 0                       null,
+    pickup_location varchar(20)                                     null,
+    pickup_datetime timestamp                                       null,
     status          varchar(20)                                 not null,
 
     -- common columns
