@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
+import com.geeks.geeksbackend.dto.product.ProductJoinDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
 import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.service.UserService;
@@ -125,5 +126,22 @@ public class ProductController {
             @RequestParam String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         ProductListDto productListDto = productService.getProductList(query, pageable);
         return new ResponseEntity<>(productListDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/join", description = "물품 공동구매 참여 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/join")
+    public ResponseEntity<ProductDto> joinProduct(@RequestBody ProductJoinDto input) {
+        UserDto userDto = userService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.joinProduct(input.getId(), userDto.getId());
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }

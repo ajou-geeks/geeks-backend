@@ -1,5 +1,7 @@
 package com.geeks.geeksbackend.entity;
 
+import com.geeks.geeksbackend.entity.BaseEntity;
+import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.ProductType;
 import lombok.AllArgsConstructor;
