@@ -87,4 +87,17 @@ public class DeliveryController {
         deliveryService.deleteDelivery(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+    @Operation(summary = "GET() /delivery/{id}", description = "배달음식 공동구매 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<DeliveryDto> getDelivery(@PathVariable("id") Long id) {
+        DeliveryDto deliveryDto = deliveryService.getDelivery(id);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
 }

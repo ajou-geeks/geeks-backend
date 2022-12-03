@@ -90,4 +90,15 @@ public class DeliveryService {
 
         deliveryRepository.delete(delivery);
     }
+
+    public DeliveryDto getDelivery(Long id) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+
+        if (delivery.getEndTime().isBefore(LocalDateTime.now())) {
+            delivery.setStatus(CoBuyStatus.EXPIRE);
+        }
+
+        return DeliveryDto.from(delivery);
+    }
 }
