@@ -126,4 +126,37 @@ public class DeliveryService {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    public DeliveryDto joinDelivery(Long deliveryId, Long userId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+
+        if (deliveryUserRepository.existsByDeliveryAndUser(delivery, user)) {
+            throw new RuntimeException("이미 참여한 공동구매 입니다.");
+        }
+
+        if (delivery.getStatus() == CoBuyStatus.EXPIRE ||
+                delivery.getEndTime().isBefore(LocalDateTime.now())) {
+            delivery.setStatus(CoBuyStatus.EXPIRE);
+            throw new RuntimeException("만료된 공동구매 입니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.OPEN) {
+            throw new RuntimeException("참여할 수 없는 공동구매 입니다.");
+        }
+
+        DeliveryUser deliveryUser = DeliveryUser.builder()
+                .delivery(delivery)
+                .user(user)
+                .type(CoBuyUserType.MEMBER)
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+
+        deliveryUserRepository.save(deliveryUser);
+
+        return DeliveryDto.from(delivery);
+    }
 }
