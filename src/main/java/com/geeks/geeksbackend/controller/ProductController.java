@@ -50,8 +50,8 @@ public class ProductController {
     })
     @PostMapping("")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.createProduct(input, userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.createProduct(input, userId);
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
@@ -74,8 +74,8 @@ public class ProductController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.updateProduct(id, input, userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.updateProduct(id, input, userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
@@ -88,7 +88,6 @@ public class ProductController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity deleteProduct(@PathVariable("id") Long id) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
         productService.deleteProduct(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -138,8 +137,8 @@ public class ProductController {
     })
     @PostMapping("/join")
     public ResponseEntity<ProductDto> joinProduct(@RequestBody ProductIdDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.joinProduct(input.getId(), userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.joinProduct(input.getId(), userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
@@ -155,8 +154,8 @@ public class ProductController {
     })
     @PostMapping("/cancel")
     public ResponseEntity<ProductDto> cancelProduct(@RequestBody ProductIdDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.cancelProduct(input.getId(), userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.cancelProduct(input.getId(), userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
@@ -176,8 +175,8 @@ public class ProductController {
     })
     @PostMapping("/settle")
     public ResponseEntity<ProductDto> settleProduct(@RequestBody ProductSettleDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.settleProduct(input, userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.settleProduct(input, userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
@@ -195,8 +194,8 @@ public class ProductController {
     })
     @PostMapping("/receive")
     public ResponseEntity<ProductDto> receiveProduct(@RequestBody ProductReceiveDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.receiveProduct(input, userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.receiveProduct(input, userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
@@ -212,8 +211,8 @@ public class ProductController {
     })
     @PostMapping("/confirm")
     public ResponseEntity<ProductDto> confirmProduct(@RequestBody ProductIdDto input) {
-        UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.confirmProduct(input.getId(), userDto.getId());
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.confirmProduct(input.getId(), userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }
