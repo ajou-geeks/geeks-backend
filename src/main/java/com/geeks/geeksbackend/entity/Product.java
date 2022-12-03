@@ -60,13 +60,13 @@ public class Product extends BaseEntity {
     @Column(name = "total_amount")
     private int totalAmount;
 
+    private int amount;
+
     @Column(name = "pickup_location")
     private String pickupLocation;
 
     @Column(name = "pickup_datetime")
     private LocalDateTime pickupDatetime;
-
-    private int amount;
 
     @Enumerated(EnumType.STRING)
     private CoBuyStatus status;

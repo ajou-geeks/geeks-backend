@@ -227,7 +227,7 @@ public class ProductService {
         product.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
         product.setStatus(CoBuyStatus.RECEIVE);
 
-        // TODO: 공동구매 참여자들에게 정산 알림 전송
+        // TODO: 공동구매 참여자들에게 수령 알림 전송
         // ...
 
         return ProductDto.from(product);
