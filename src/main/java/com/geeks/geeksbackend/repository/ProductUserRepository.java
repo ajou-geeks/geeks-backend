@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ProductUserRepository extends JpaRepository<ProductUser, Long> {
 
     boolean existsByProductAndUser(Product product, User user);
-    Optional<ProductUser> findByProductAndUser(Product product, User user);
+    Optional<ProductUser> findByProductIdAndUserId(Long productId, Long userId);
 }

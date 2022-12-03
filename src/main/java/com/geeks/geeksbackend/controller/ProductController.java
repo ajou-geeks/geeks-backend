@@ -1,9 +1,6 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.product.ProductCancelDto;
-import com.geeks.geeksbackend.dto.product.ProductDto;
-import com.geeks.geeksbackend.dto.product.ProductJoinDto;
-import com.geeks.geeksbackend.dto.product.ProductListDto;
+import com.geeks.geeksbackend.dto.product.*;
 import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.service.UserService;
 import com.geeks.geeksbackend.service.ProductService;
@@ -160,6 +157,27 @@ public class ProductController {
     public ResponseEntity<ProductDto> cancelProduct(@RequestBody ProductCancelDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.cancelProduct(input.getId(), userDto.getId());
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/settle", description = "물품 공동구매 정산 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1"),
+            @Parameter(name = "bankName", description = "은행이름", example = "카카오뱅크"),
+            @Parameter(name = "accountNumber", description = "계좌번호", example = "1111-11-1111111"),
+            @Parameter(name = "totalAmount", description = "총 결제금액", example = "20000"),
+            @Parameter(name = "amount", description = "정산금액", example = "5000")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/settle")
+    public ResponseEntity<ProductDto> settleProduct(@RequestBody ProductSettleDto input) {
+        UserDto userDto = userService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.settleProduct(input, userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }
