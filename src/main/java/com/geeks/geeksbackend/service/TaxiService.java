@@ -71,7 +71,6 @@ public class TaxiService {
             if (taxi.getUserId() != changeDto.getUserId()) {
                 return false;
             }
-            taxi.setStatus(CoBuyStatus.CANCEL);
             taxi.setDeleted(true);
             taxi.setDeletedAt(LocalDateTime.now());
             taxiRepository.save(taxi);

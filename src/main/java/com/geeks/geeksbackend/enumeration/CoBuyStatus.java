@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public enum CoBuyStatus {
     OPEN("진행중"),
     CLOSE("모집완료"),
-    CANCEL("취소"),
+    EXPIRE("모집만료"),
     SETTLE("정산중"),
     COMPLETE("완료"),
     ERROR("에러");

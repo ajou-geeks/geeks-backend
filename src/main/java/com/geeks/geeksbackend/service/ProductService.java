@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -81,15 +83,27 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
 
+        if (product.getEndTime().isBefore(LocalDateTime.now())) {
+            product.setStatus(CoBuyStatus.EXPIRE);
+        }
+
         return ProductDto.from(product);
     }
 
     public ProductListDto getProductList(String query, Pageable pageable) {
         Page<Product> page = productRepository.findByNameContains(query, pageable);
+        List<Product> products = new ArrayList<>();
+
+        for (Product product : page.getContent()) {
+            if (product.getEndTime().isBefore(LocalDateTime.now())) {
+                product.setStatus(CoBuyStatus.EXPIRE);
+            }
+            products.add(product);
+        }
 
         return ProductListDto.builder()
                 .totalCount(page.getTotalElements())
-                .elements(page.getContent().stream()
+                .elements(products.stream()
                         .map(ProductDto::from)
                         .collect(Collectors.toList()))
                 .build();
