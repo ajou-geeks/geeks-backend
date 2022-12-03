@@ -1,11 +1,7 @@
 package com.geeks.geeksbackend.service;
 
-import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
-import com.geeks.geeksbackend.entity.Delivery;
-import com.geeks.geeksbackend.entity.DeliveryUser;
-import com.geeks.geeksbackend.entity.User;
-import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
+import com.geeks.geeksbackend.dto.delivery.*;
+import com.geeks.geeksbackend.entity.*;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.CoBuyUserType;
 import com.geeks.geeksbackend.enumeration.DeliveryType;
@@ -181,6 +177,74 @@ public class DeliveryService {
         }
 
         deliveryUserRepository.delete(deliveryUser);
+
+        return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryDto settleDelivery(DeliverySettleDto input, Long userId) {
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(input.getId(), userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Delivery delivery = deliveryUser.getDelivery();
+
+        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.CLOSE) {
+            throw new RuntimeException("정산할 수 없는 공동구매 입니다.");
+        }
+
+        delivery.setBankName(input.getBankName());
+        delivery.setAccountNumber(input.getAccountNumber());
+        delivery.setTotalAmount(input.getTotalAmount());
+        delivery.setStatus(CoBuyStatus.SETTLE);
+
+        // TODO: 공동구매 참여자들에게 정산 알림 전송 (배달비 고려)
+        // ...
+
+        return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryDto receiveDelivery(DeliveryReceiveDto input, Long userId) {
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(input.getId(), userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Delivery delivery = deliveryUser.getDelivery();
+
+        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.SETTLE) {
+            throw new RuntimeException("수령할 수 없는 공동구매 입니다.");
+        }
+
+        delivery.setPickupLocation(input.getPickupLocation());
+        delivery.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
+        delivery.setStatus(CoBuyStatus.RECEIVE);
+
+        // TODO: 공동구매 참여자들에게 수령 알림 전송
+        // ...
+
+        return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryDto confirmDelivery(Long deliveryId, Long userId) {
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(deliveryId, userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Delivery delivery = deliveryUser.getDelivery();
+
+        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.RECEIVE) {
+            throw new RuntimeException("완료할 수 없는 공동구매 입니다.");
+        }
+
+        delivery.setStatus(CoBuyStatus.COMPLETE);
 
         return DeliveryDto.from(delivery);
     }

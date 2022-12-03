@@ -1,9 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryIdDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
-import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
+import com.geeks.geeksbackend.dto.delivery.*;
+import com.geeks.geeksbackend.entity.Delivery;
 import com.geeks.geeksbackend.service.DeliveryService;
 import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -160,6 +158,62 @@ public class DeliveryController {
     public ResponseEntity<DeliveryDto> cancelDelivery(@RequestBody DeliveryIdDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         DeliveryDto deliveryDto = deliveryService.cancelDelivery(input.getId(), userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /delivery/settle", description = "배달음식 공동구매 정산 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "bankName", description = "은행이름", example = "카카오뱅크"),
+            @Parameter(name = "accountNumber", description = "계좌번호", example = "1111-11-1111111"),
+            @Parameter(name = "totalAmount", description = "총 결제금액", example = "20000")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/settle")
+    public ResponseEntity<DeliveryDto> settleDelivery(@RequestBody DeliverySettleDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.settleDelivery(input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /delivery/receive", description = "배달음식 공동구매 수령 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "pickupLocation", description = "수령장소", example = "일신관 로비"),
+            @Parameter(name = "pickupDatetime", description = "수령일자", example = "2022-11-27T18:00:00")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/receive")
+    public ResponseEntity<DeliveryDto> receiveDelivery(@RequestBody DeliveryReceiveDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.receiveDelivery(input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /delivery/confirm", description = "배달음식 공동구매 완료 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/confirm")
+    public ResponseEntity<DeliveryDto> confirmDelivery(@RequestBody DeliveryIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.confirmDelivery(input.getId(), userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
 }
