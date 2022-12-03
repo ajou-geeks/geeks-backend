@@ -96,7 +96,7 @@ public class ProductController {
 
     @Operation(summary = "GET() /product/{id}", description = "물품 공동구매 조회 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @ Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
@@ -109,13 +109,13 @@ public class ProductController {
 
     @Operation(summary = "GET() /product/list", description = "물품 공동구매 목록 조회 API")
     @Parameters({
-            @Parameter(name = "page",  description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
+            @Parameter(name = "page", description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
             @Parameter(name = "count", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
-            @Parameter(name = "sort",  description = "정렬 방법", example = "recent"),
-            @Parameter(name = "query", description = "검색할 내용", example = "우유"),
+            @Parameter(name = "sort", description = "정렬 방법", example = "recent"),
+            @Parameter(name = "query", description = "검색할 내용", example = "우유")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @ Schema(implementation = ProductListDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductListDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
