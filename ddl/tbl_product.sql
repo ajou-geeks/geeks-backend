@@ -15,6 +15,10 @@ create table tbl_product
     max_participant int                                         not null,
     destination     varchar(10)                                     null,
     thumbnail_url   varchar(255)                                    null,
+    bank_name       varchar(20)                                     null,
+    account_number  varchar(20)                                     null,
+    total_amount    int             default 0                       null,
+    amount          int             default 0                       null,
     status          varchar(20)                                 not null,
 
     -- common columns

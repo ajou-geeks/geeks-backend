@@ -51,6 +51,17 @@ public class Product extends BaseEntity {
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
 
+    @Column(name = "bank_name")
+    private String bankName;
+
+    @Column(name = "account_number")
+    private String accountNumber;
+
+    @Column(name = "total_amount")
+    private int totalAmount;
+
+    private int amount;
+
     @Enumerated(EnumType.STRING)
     private CoBuyStatus status;
 

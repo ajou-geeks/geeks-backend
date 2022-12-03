@@ -2,6 +2,7 @@ package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
+import com.geeks.geeksbackend.dto.product.ProductSettleDto;
 import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.ProductUser;
@@ -33,20 +34,20 @@ public class ProductService {
     private final UserRepository userRepository;
     private final ProductUserRepository productUserRepository;
 
-    public ProductDto createProduct(ProductDto productDto, Long userId) {
+    public ProductDto createProduct(ProductDto input, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
 
         Product product = Product.builder()
                 .user(user)
-                .name(productDto.getName())
-                .type1(ProductType.valueOfTitle(productDto.getType1()))
-                .price(productDto.getPrice())
-                .startTime(LocalDateTime.parse(productDto.getStartTime(), DateTimeFormatter.ISO_DATE_TIME))
-                .endTime(LocalDateTime.parse(productDto.getEndTime(), DateTimeFormatter.ISO_DATE_TIME))
-                .maxParticipant(productDto.getMaxParticipant())
-                .destination(productDto.getDestination())
-                .thumbnailUrl(productDto.getThumbnailUrl())
+                .name(input.getName())
+                .type1(ProductType.valueOfTitle(input.getType1()))
+                .price(input.getPrice())
+                .startTime(LocalDateTime.parse(input.getStartTime(), DateTimeFormatter.ISO_DATE_TIME))
+                .endTime(LocalDateTime.parse(input.getEndTime(), DateTimeFormatter.ISO_DATE_TIME))
+                .maxParticipant(input.getMaxParticipant())
+                .destination(input.getDestination())
+                .thumbnailUrl(input.getThumbnailUrl())
                 .status(CoBuyStatus.OPEN)
                 .createdBy(userId)
                 .updatedBy(userId)
@@ -165,18 +166,44 @@ public class ProductService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
 
-        ProductUser productUser = productUserRepository.findByProductAndUser(product, user)
+        ProductUser productUser = productUserRepository.findByProductIdAndUserId(product.getId(), user.getId())
                 .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매 입니다."));
-
-        if (product.getStatus() != CoBuyStatus.OPEN) {
-            throw new RuntimeException("취소할 수 없는 공동구매 입니다.");
-        }
 
         if (productUser.getType() == CoBuyUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
         }
 
+        if (product.getStatus() != CoBuyStatus.OPEN) {
+            throw new RuntimeException("취소할 수 없는 공동구매 입니다.");
+        }
+
         productUserRepository.delete(productUser);
+
+        return ProductDto.from(product);
+    }
+
+    public ProductDto settleProduct(ProductSettleDto input, Long userId) {
+        ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Product product = productUser.getProduct();
+
+        if (productUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 참여자는 정산할 수 없습니다.");
+        }
+
+        if (product.getStatus() != CoBuyStatus.CLOSE) {
+            throw new RuntimeException("정산할 수 없는 공동구매 입니다.");
+        }
+
+        product.setBankName(input.getBankName());
+        product.setAccountNumber(input.getAccountNumber());
+        product.setTotalAmount(input.getTotalAmount());
+        product.setAmount(input.getAmount());
+        product.setStatus(CoBuyStatus.SETTLE);
+
+        // TODO: 공동구매 참여자들에게 정산 알림 전송
+        // ...
 
         return ProductDto.from(product);
     }
