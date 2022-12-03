@@ -69,7 +69,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<DeliveryDto> updateProduct(@PathVariable("id") Long id, @RequestBody DeliveryDto input) {
+    public ResponseEntity<DeliveryDto> updateDelivery(@PathVariable("id") Long id, @RequestBody DeliveryDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         DeliveryDto deliveryDto = deliveryService.updateDelivery(id, input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
