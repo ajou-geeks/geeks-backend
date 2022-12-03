@@ -1,6 +1,8 @@
 package com.geeks.geeksbackend.controller;
 
+import com.geeks.geeksbackend.dto.product.ProductCancelDto;
 import com.geeks.geeksbackend.dto.product.ProductDto;
+import com.geeks.geeksbackend.dto.product.ProductJoinDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
 import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.service.UserService;
@@ -96,7 +98,7 @@ public class ProductController {
 
     @Operation(summary = "GET() /product/{id}", description = "물품 공동구매 조회 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @ Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
@@ -109,13 +111,13 @@ public class ProductController {
 
     @Operation(summary = "GET() /product/list", description = "물품 공동구매 목록 조회 API")
     @Parameters({
-            @Parameter(name = "page",  description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
+            @Parameter(name = "page", description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
             @Parameter(name = "count", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
-            @Parameter(name = "sort",  description = "정렬 방법", example = "recent"),
-            @Parameter(name = "query", description = "검색할 내용", example = "우유"),
+            @Parameter(name = "sort", description = "정렬 방법", example = "recent"),
+            @Parameter(name = "query", description = "검색할 내용", example = "우유")
     })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @ Schema(implementation = ProductListDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductListDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
@@ -125,5 +127,39 @@ public class ProductController {
             @RequestParam String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         ProductListDto productListDto = productService.getProductList(query, pageable);
         return new ResponseEntity<>(productListDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/join", description = "물품 공동구매 참여 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/join")
+    public ResponseEntity<ProductDto> joinProduct(@RequestBody ProductJoinDto input) {
+        UserDto userDto = userService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.joinProduct(input.getId(), userDto.getId());
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/cancel", description = "물품 공동구매 참여 취소 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/cancel")
+    public ResponseEntity<ProductDto> cancelProduct(@RequestBody ProductCancelDto input) {
+        UserDto userDto = userService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.cancelProduct(input.getId(), userDto.getId());
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }

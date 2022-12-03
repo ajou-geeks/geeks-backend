@@ -6,6 +6,8 @@ create table tbl_user
     -- columns
     email           varchar(300)                                not null,
     password        varchar(300)                                not null,
+    name            varchar(20)                                     null,
+    nickname        varchar(20)                                     null,
     profile_image   varchar(255)                                    null,
     filename        varchar(300)                                    null,
     dormitory       varchar(200)                                    null,

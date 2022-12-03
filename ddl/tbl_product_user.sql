@@ -1,21 +1,14 @@
-create table tbl_product
+create table tbl_product_user
 (
     -- primary key
     id              bigint unsigned                             not null auto_increment primary key,
 
     -- fk columns
+    product_id      bigint unsigned                             not null,
     user_id         bigint unsigned                             not null,
 
     -- columns
-    name            varchar(50)                                 not null,
-    type1           varchar(20)                                 not null,
-    price           int                                         not null,
-    start_time      timestamp       default current_timestamp   not null,
-    end_time        timestamp                                       null,
-    max_participant int                                         not null,
-    destination     varchar(10)                                     null,
-    thumbnail_url   varchar(255)                                    null,
-    status          varchar(20)                                 not null,
+    type            varchar(10)                                 not null,
 
     -- common columns
     created_by      bigint unsigned                             not null,
@@ -25,9 +18,10 @@ create table tbl_product
     deleted         boolean         default false               not null,
     deleted_at      timestamp                                       null,
 
+    foreign key (product_id) references tbl_product(id),
     foreign key (user_id) references tbl_user(id)
 
     ) engine = InnoDB
     default charset = utf8mb4
     collate = utf8mb4_unicode_ci
-    comment = 'product table';
+    comment = 'product user table';
