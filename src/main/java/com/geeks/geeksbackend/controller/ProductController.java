@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.controller;
 
+import com.geeks.geeksbackend.dto.product.ProductCancelDto;
 import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.dto.product.ProductJoinDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
@@ -142,6 +143,23 @@ public class ProductController {
     public ResponseEntity<ProductDto> joinProduct(@RequestBody ProductJoinDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
         ProductDto productDto = productService.joinProduct(input.getId(), userDto.getId());
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/cancel", description = "물품 공동구매 참여 취소 API")
+    @Parameters({
+            @Parameter(name = "id", description = "물품ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/cancel")
+    public ResponseEntity<ProductDto> cancelProduct(@RequestBody ProductCancelDto input) {
+        UserDto userDto = userService.getMyUserWithAuthorities();
+        ProductDto productDto = productService.cancelProduct(input.getId(), userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }

@@ -158,4 +158,26 @@ public class ProductService {
 
         return ProductDto.from(product);
     }
+
+    public ProductDto cancelProduct(Long productId, Long userId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+
+        ProductUser productUser = productUserRepository.findByProductAndUser(product, user)
+                .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매 입니다."));
+
+        if (product.getStatus() != CoBuyStatus.OPEN) {
+            throw new RuntimeException("취소할 수 없는 공동구매 입니다.");
+        }
+
+        if (productUser.getType() == CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
+        }
+
+        productUserRepository.delete(productUser);
+
+        return ProductDto.from(product);
+    }
 }
