@@ -184,4 +184,29 @@ public class DeliveryService {
 
         return DeliveryDto.from(delivery);
     }
+
+    public DeliveryDto settleDelivery(DeliverySettleDto input, Long userId) {
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(input.getId(), userId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        Delivery delivery = deliveryUser.getDelivery();
+
+        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.CLOSE) {
+            throw new RuntimeException("정산할 수 없는 공동구매 입니다.");
+        }
+
+        delivery.setBankName(input.getBankName());
+        delivery.setAccountNumber(input.getAccountNumber());
+        delivery.setTotalAmount(input.getTotalAmount());
+        delivery.setStatus(CoBuyStatus.SETTLE);
+
+        // TODO: 공동구매 참여자들에게 정산 알림 전송 (배달비 고려)
+        // ...
+
+        return DeliveryDto.from(delivery);
+    }
 }

@@ -162,4 +162,24 @@ public class DeliveryController {
         DeliveryDto deliveryDto = deliveryService.cancelDelivery(input.getId(), userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "POST() /delivery/settle", description = "배달음식 공동구매 정산 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "bankName", description = "은행이름", example = "카카오뱅크"),
+            @Parameter(name = "accountNumber", description = "계좌번호", example = "1111-11-1111111"),
+            @Parameter(name = "totalAmount", description = "총 결제금액", example = "20000")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/settle")
+    public ResponseEntity<DeliveryDto> settleDelivery(@RequestBody DeliverySettleDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.settleDelivery(input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
 }
