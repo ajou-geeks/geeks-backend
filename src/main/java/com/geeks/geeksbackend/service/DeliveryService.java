@@ -162,4 +162,26 @@ public class DeliveryService {
 
         return DeliveryDto.from(delivery);
     }
+
+    public DeliveryDto cancelDelivery(Long deliveryId, Long userId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(delivery.getId(), user.getId())
+                .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매 입니다."));
+
+        if (deliveryUser.getType() == CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.OPEN) {
+            throw new RuntimeException("취소할 수 없는 공동구매 입니다.");
+        }
+
+        deliveryUserRepository.delete(deliveryUser);
+
+        return DeliveryDto.from(delivery);
+    }
 }

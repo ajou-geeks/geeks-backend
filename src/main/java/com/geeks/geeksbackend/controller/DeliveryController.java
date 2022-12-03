@@ -145,4 +145,21 @@ public class DeliveryController {
         DeliveryDto deliveryDto = deliveryService.joinDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "POST() /delivery/cancel", description = "배달음식 공동구매 참여 취소 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/cancel")
+    public ResponseEntity<DeliveryDto> cancelDelivery(@RequestBody DeliveryIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.cancelDelivery(input.getId(), userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
 }
