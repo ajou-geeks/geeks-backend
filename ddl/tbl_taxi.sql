@@ -6,8 +6,8 @@ create table tbl_taxi
     -- columns
     user_id         bigint unsigned                             not null,
     price           int                                         not null,
-    start_time      timestamp                                   not null,
-    end_time        timestamp                                   not null,
+    start_time      timestamp       default current_timestamp   not null,
+    end_time        timestamp                                       null,
     max_participant int                                         not null,
     source          varchar(200)                                not null,
     destination     varchar(200)                                not null,

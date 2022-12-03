@@ -22,7 +22,7 @@ public class Notice extends BaseEntity {
     private Long id;
     private String content;
     @ManyToOne
-    private Member from;
+    private User from;
     @ManyToOne
-    private Member to;
+    private User to;
 }

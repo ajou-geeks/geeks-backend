@@ -9,13 +9,13 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tbl_taxi_member")
+@Table(name = "tbl_taxi_user")
 @Getter
 @Setter
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaxiMember {
+public class TaxiUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -1,7 +1,7 @@
 package com.geeks.geeksbackend.service;
 
-import com.geeks.geeksbackend.entity.Member;
-import com.geeks.geeksbackend.repository.MemberRepository;
+import com.geeks.geeksbackend.entity.User;
+import com.geeks.geeksbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Component("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -27,13 +27,13 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(name + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
-    private org.springframework.security.core.userdetails.User createUser(String username, Member member) {
-        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
+    private org.springframework.security.core.userdetails.User createUser(String username, User user) {
+        List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
                 .collect(Collectors.toList());
 
-        return new org.springframework.security.core.userdetails.User(member.getEmail(),
-                member.getPassword(),
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+                user.getPassword(),
                 grantedAuthorities);
     }
 }

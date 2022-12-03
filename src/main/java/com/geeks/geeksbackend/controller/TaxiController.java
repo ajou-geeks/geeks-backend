@@ -3,7 +3,7 @@ package com.geeks.geeksbackend.controller;
 import com.geeks.geeksbackend.dto.taxi.ChangeDto;
 import com.geeks.geeksbackend.dto.taxi.CreateDto;
 import com.geeks.geeksbackend.entity.Taxi;
-import com.geeks.geeksbackend.service.MemberService;
+import com.geeks.geeksbackend.service.UserService;
 import com.geeks.geeksbackend.service.TaxiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TaxiController {
 
-    private final MemberService memberService;
+    private final UserService userService;
     private final TaxiService taxiService;
 
     @Operation(summary = "GET() /taxi", description = "택시 공동구매 리스트 조회 API")
@@ -48,16 +48,16 @@ public class TaxiController {
         return ResponseEntity.ok().body(taxiService.getTaxi(id));
     }
 
-    @Operation(summary = "GET() /taxi/member/id}", description = "택시 공동구매 참여자 조회 API")
+    @Operation(summary = "GET() /taxi/user/id}", description = "택시 공동구매 참여자 조회 API")
     @Parameters({
             @Parameter(name = "id", description = "택시 아이디", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "택시 공동구매 참여자 조회 성공")
     })
-    @GetMapping("/member/{id}")
-    public ResponseEntity<?> getTaxiMembers(@PathVariable("id") long id) {
-        return ResponseEntity.ok().body(taxiService.getTaxiMembers(id));
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getTaxiUsers(@PathVariable("id") long id) {
+        return ResponseEntity.ok().body(taxiService.getTaxiUsers(id));
     }
 
     @Operation(summary = "POST() /taxi", description = "택시 공동구매 생성 API")

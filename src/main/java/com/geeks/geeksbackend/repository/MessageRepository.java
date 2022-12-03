@@ -1,6 +1,5 @@
 package com.geeks.geeksbackend.repository;
 
-import com.geeks.geeksbackend.entity.Member;
 import com.geeks.geeksbackend.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 

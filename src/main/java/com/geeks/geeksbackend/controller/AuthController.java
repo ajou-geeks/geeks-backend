@@ -1,12 +1,12 @@
 package com.geeks.geeksbackend.controller;
 
-import com.geeks.geeksbackend.dto.member.LoginDto;
+import com.geeks.geeksbackend.dto.user.LoginDto;
 import com.geeks.geeksbackend.dto.jwt.TokenDto;
-import com.geeks.geeksbackend.dto.member.UserDto;
+import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.jwt.JwtFilter;
 import com.geeks.geeksbackend.jwt.TokenProvider;
 import com.geeks.geeksbackend.service.AwsS3Service;
-import com.geeks.geeksbackend.service.MemberService;
+import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -34,7 +34,7 @@ import java.io.IOException;
 public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final MemberService memberService;
+    private final UserService userService;
     private final AwsS3Service awsS3Service;
 
     @Operation(summary = "POST() /auth/register", description = "회원가입 API")
@@ -51,7 +51,7 @@ public class AuthController {
             @Valid @ModelAttribute UserDto userDto
     ) throws IOException {
         String url = awsS3Service.uploadFileV1(userDto.getFile());
-        memberService.signup(userDto, url);
+        userService.signup(userDto, url);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("email", userDto.getEmail());
         jsonObject.put("file", userDto.getFile().getOriginalFilename());
@@ -77,7 +77,7 @@ public class AuthController {
 
         String jwt = tokenProvider.createToken(authentication);
 
-        long id = memberService.findByEmail(loginDto.getEmail()).getId();
+        long id = userService.findByEmail(loginDto.getEmail()).getId();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);

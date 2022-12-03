@@ -2,18 +2,17 @@ package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.taxi.ChangeDto;
 import com.geeks.geeksbackend.dto.taxi.CreateDto;
-import com.geeks.geeksbackend.entity.Member;
+import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.Taxi;
-import com.geeks.geeksbackend.entity.TaxiMember;
+import com.geeks.geeksbackend.entity.TaxiUser;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
-import com.geeks.geeksbackend.repository.MemberRepository;
-import com.geeks.geeksbackend.repository.TaxiMemberRepository;
+import com.geeks.geeksbackend.repository.UserRepository;
+import com.geeks.geeksbackend.repository.TaxiUserRepository;
 import com.geeks.geeksbackend.repository.TaxiRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -24,9 +23,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TaxiService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
     private final TaxiRepository taxiRepository;
-    private final TaxiMemberRepository taxiMemberRepository;
+    private final TaxiUserRepository taxiUserRepository;
 
     public List<Taxi> getTaxis() {
         return taxiRepository.findAll();
@@ -36,8 +35,8 @@ public class TaxiService {
         return taxiRepository.findById(id);
     }
 
-    public List<TaxiMember> getTaxiMembers(long id) {
-        return taxiMemberRepository.findByTaxiId(id);
+    public List<TaxiUser> getTaxiUsers(long id) {
+        return taxiUserRepository.findByTaxiId(id);
     }
 
     public void createTaxi(CreateDto createDto) {
@@ -55,15 +54,15 @@ public class TaxiService {
                 .build();
 
         Taxi newTaxi = taxiRepository.save(taxi);
-        Member member = memberRepository.findById(createDto.getUserId());
+        User user = userRepository.findById(createDto.getUserId());
 
-        TaxiMember taxiMember = TaxiMember.builder()
+        TaxiUser taxiUser = TaxiUser.builder()
                 .taxiId(newTaxi.getId())
                 .userId(newTaxi.getUserId())
-                .email(member.getEmail())
+                .email(user.getEmail())
                 .build();
 
-        taxiMemberRepository.save(taxiMember);
+        taxiUserRepository.save(taxiUser);
     }
 
     public boolean cancleTaxi(ChangeDto changeDto) {
@@ -116,20 +115,20 @@ public class TaxiService {
                 return 2;
             }
 
-            TaxiMember taxiMember = taxiMemberRepository.findByTaxiIdAndUserId(changeDto.getId(), changeDto.getUserId());
-            if (taxiMember != null && taxiMember.getUserId() == changeDto.getUserId()) {
+            TaxiUser taxiUser = taxiUserRepository.findByTaxiIdAndUserId(changeDto.getId(), changeDto.getUserId());
+            if (taxiUser != null && taxiUser.getUserId() == changeDto.getUserId()) {
                 return 3;
             }
 
-            Member member = memberRepository.findById(changeDto.getUserId());
-            if (member != null) {
-                TaxiMember newTaxiMember = TaxiMember.builder()
+            User user = userRepository.findById(changeDto.getUserId());
+            if (user != null) {
+                TaxiUser newTaxiUser = TaxiUser.builder()
                         .taxiId(changeDto.getId())
                         .userId(changeDto.getUserId())
-                        .email(member.getEmail())
+                        .email(user.getEmail())
                         .build();
 
-                taxiMemberRepository.save(newTaxiMember);
+                taxiUserRepository.save(newTaxiUser);
                 return 0;
             }
             return 5;
