@@ -4,6 +4,7 @@ import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
 import com.geeks.geeksbackend.entity.Delivery;
 import com.geeks.geeksbackend.entity.DeliveryUser;
 import com.geeks.geeksbackend.entity.User;
+import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.CoBuyUserType;
 import com.geeks.geeksbackend.enumeration.DeliveryType;
@@ -11,12 +12,17 @@ import com.geeks.geeksbackend.repository.DeliveryRepository;
 import com.geeks.geeksbackend.repository.DeliveryUserRepository;
 import com.geeks.geeksbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -100,5 +106,24 @@ public class DeliveryService {
         }
 
         return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryListDto getDeliveryList(String query, Pageable pageable) {
+        Page<Delivery> page = deliveryRepository.findByNameContains(query, pageable);
+        List<Delivery> deliveries = new ArrayList<>();
+
+        for (Delivery delivery : page.getContent()) {
+            if (delivery.getEndTime().isBefore(LocalDateTime.now())) {
+                delivery.setStatus(CoBuyStatus.EXPIRE);
+            }
+            deliveries.add(delivery);
+        }
+
+        return DeliveryListDto.builder()
+                .totalCount(page.getTotalElements())
+                .elements(deliveries.stream()
+                        .map(DeliveryDto::from)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

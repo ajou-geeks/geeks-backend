@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
+import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
 import com.geeks.geeksbackend.service.DeliveryService;
 import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -99,5 +103,25 @@ public class DeliveryController {
     public ResponseEntity<DeliveryDto> getDelivery(@PathVariable("id") Long id) {
         DeliveryDto deliveryDto = deliveryService.getDelivery(id);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "GET() /delivery/list", description = "배달음식 공동구매 목록 조회 API")
+    @Parameters({
+            @Parameter(name = "page", description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
+            @Parameter(name = "count", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
+            @Parameter(name = "sort", description = "정렬 방법", example = "recent"),
+            @Parameter(name = "query", description = "검색할 내용", example = "아주대")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryListDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/list")
+    public ResponseEntity<DeliveryListDto> getDeliveryList(
+            @RequestParam String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        DeliveryListDto deliveryListDto = deliveryService.getDeliveryList(query, pageable);
+        return new ResponseEntity<>(deliveryListDto, HttpStatus.OK);
     }
 }
