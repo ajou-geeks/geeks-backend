@@ -4,6 +4,7 @@ import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
 import com.geeks.geeksbackend.entity.Delivery;
 import com.geeks.geeksbackend.entity.DeliveryUser;
 import com.geeks.geeksbackend.entity.User;
+import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
 import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.CoBuyUserType;
@@ -125,5 +126,62 @@ public class DeliveryService {
                         .map(DeliveryDto::from)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    public DeliveryDto joinDelivery(DeliveryJoinDto input, Long userId) {
+        Delivery delivery = deliveryRepository.findById(input.getId())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+
+        if (deliveryUserRepository.existsByDeliveryAndUser(delivery, user)) {
+            throw new RuntimeException("이미 참여한 공동구매 입니다.");
+        }
+
+        if (delivery.getStatus() == CoBuyStatus.EXPIRE ||
+                delivery.getEndTime().isBefore(LocalDateTime.now())) {
+            delivery.setStatus(CoBuyStatus.EXPIRE);
+            throw new RuntimeException("만료된 공동구매 입니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.OPEN) {
+            throw new RuntimeException("참여할 수 없는 공동구매 입니다.");
+        }
+
+        DeliveryUser deliveryUser = DeliveryUser.builder()
+                .delivery(delivery)
+                .user(user)
+                .type(CoBuyUserType.MEMBER)
+                .amount(input.getAmount())
+                .description(input.getDescription())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+
+        deliveryUserRepository.save(deliveryUser);
+
+        return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryDto cancelDelivery(Long deliveryId, Long userId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+
+        DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(delivery.getId(), user.getId())
+                .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매 입니다."));
+
+        if (deliveryUser.getType() == CoBuyUserType.MANAGER) {
+            throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
+        }
+
+        if (delivery.getStatus() != CoBuyStatus.OPEN) {
+            throw new RuntimeException("취소할 수 없는 공동구매 입니다.");
+        }
+
+        deliveryUserRepository.delete(deliveryUser);
+
+        return DeliveryDto.from(delivery);
     }
 }

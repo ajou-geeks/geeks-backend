@@ -10,6 +10,7 @@ create table tbl_delivery_user
     -- columns
     type            varchar(10)                                 not null,
     amount          int             default 0                   not null,
+    description     varchar(100)                                    null,
 
     -- common columns
     created_by      bigint unsigned                             not null,

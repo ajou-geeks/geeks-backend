@@ -1,6 +1,8 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.delivery.DeliveryDto;
+import com.geeks.geeksbackend.dto.delivery.DeliveryIdDto;
+import com.geeks.geeksbackend.dto.delivery.DeliveryJoinDto;
 import com.geeks.geeksbackend.dto.delivery.DeliveryListDto;
 import com.geeks.geeksbackend.service.DeliveryService;
 import com.geeks.geeksbackend.service.UserService;
@@ -123,5 +125,41 @@ public class DeliveryController {
             @RequestParam String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         DeliveryListDto deliveryListDto = deliveryService.getDeliveryList(query, pageable);
         return new ResponseEntity<>(deliveryListDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /delivery/join", description = "배달음식 공동구매 참여 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "amount", description = "주문금액", example = "7000"),
+            @Parameter(name = "description", description = "주문상세", example = "떡볶이 1개, 참치마요김밥 1개")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/join")
+    public ResponseEntity<DeliveryDto> joinDelivery(@RequestBody DeliveryJoinDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.joinDelivery(input, userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /delivery/cancel", description = "배달음식 공동구매 참여 취소 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/cancel")
+    public ResponseEntity<DeliveryDto> cancelDelivery(@RequestBody DeliveryIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.cancelDelivery(input.getId(), userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
 }
