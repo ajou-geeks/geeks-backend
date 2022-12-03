@@ -1,10 +1,9 @@
 package com.geeks.geeksbackend.dto.product;
 
 import com.geeks.geeksbackend.entity.Product;
+import com.geeks.geeksbackend.entity.User;
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -15,31 +14,16 @@ import java.time.format.DateTimeFormatter;
 public class ProductDto {
 
     private Long id;
-
-    @NotNull
-    @Size(min = 3, max = 50)
     private String name;
-
-    @NotNull
     private String type1;
-
-    @NotNull
     private int price;
-
-    @NotNull
     private String startTime;
-
-    @NotNull
     private String endTime;
-
-    @NotNull
     private int maxParticipant;
-
     private String destination;
-
     private String thumbnailUrl;
-
     private String status;
+    private User userInfo;
 
     public static ProductDto from(Product product) {
         if (product == null) return null;
@@ -55,6 +39,11 @@ public class ProductDto {
                 .destination(product.getDestination())
                 .thumbnailUrl(product.getThumbnailUrl())
                 .status(product.getStatus().name())
+                .userInfo(User.builder()
+                        .id(product.getUser().getId())
+                        .nickname(product.getUser().getNickname())
+                        .dormitory(product.getUser().getDormitory())
+                        .build())
                 .build();
     }
 }

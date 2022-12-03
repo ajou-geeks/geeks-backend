@@ -1,11 +1,12 @@
 package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
-import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.entity.Product;
+import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.enumeration.CoBuyStatus;
 import com.geeks.geeksbackend.enumeration.ProductType;
 import com.geeks.geeksbackend.repository.ProductRepository;
+import com.geeks.geeksbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +21,13 @@ import java.util.NoSuchElementException;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    public ProductDto createProduct(ProductDto productDto, UserDto userDto) {
+    public ProductDto createProduct(ProductDto productDto, Long userId) {
+        User user = userRepository.findById(userId).get();
+
         Product product = Product.builder()
+                .user(user)
                 .name(productDto.getName())
                 .type1(ProductType.valueOfTitle(productDto.getType1()))
                 .price(productDto.getPrice())
@@ -32,15 +37,15 @@ public class ProductService {
                 .destination(productDto.getDestination())
                 .thumbnailUrl(productDto.getThumbnailUrl())
                 .status(CoBuyStatus.OPEN)
-                .createdBy(userDto.getId())
-                .updatedBy(userDto.getId())
+                .createdBy(userId)
+                .updatedBy(userId)
                 .build();
 
         return ProductDto.from(productRepository.save(product));
     }
 
     @Transactional
-    public ProductDto updateProduct(Long id, ProductDto input, UserDto userDto) {
+    public ProductDto updateProduct(Long id, ProductDto input, Long userId) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
 
@@ -56,15 +61,22 @@ public class ProductService {
         product.setMaxParticipant(input.getMaxParticipant());
         product.setDestination(input.getDestination());
         product.setThumbnailUrl(input.getThumbnailUrl());
-        product.setUpdatedBy(userDto.getId());
+        product.setUpdatedBy(userId);
 
         return ProductDto.from(product);
     }
 
-    public void deleteProduct(Long id, UserDto userDto) {
+    public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
 
         productRepository.delete(product);
+    }
+
+    public ProductDto getProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+
+        return ProductDto.from(product);
     }
 }

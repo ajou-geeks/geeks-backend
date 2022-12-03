@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "product", description = "물품 공동구매 API")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
     private final UserService userService;
 
-    @Operation(summary = "POST() /products", description = "물품 공동구매 생성 API")
+    @Operation(summary = "POST() /product", description = "물품 공동구매 생성 API")
     @Parameters({
             @Parameter(name = "name", description = "물품이름", example = "춘식이 바나나우유 500ML x 3개"),
             @Parameter(name = "type1", description = "물품타입", example = "음료"),
@@ -48,11 +48,11 @@ public class ProductController {
     @PostMapping("")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.createProduct(input, userDto);
+        ProductDto productDto = productService.createProduct(input, userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "PUT() /products/{id}", description = "물품 공동구매 수정 API")
+    @Operation(summary = "PUT() /product/{id}", description = "물품 공동구매 수정 API")
     @Parameters({
             @Parameter(name = "name", description = "물품이름", example = "춘식이 초코우유 500ML x 3개"),
             @Parameter(name = "type1", description = "물품타입", example = "음료"),
@@ -72,11 +72,11 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto input) {
         UserDto userDto = userService.getMyUserWithAuthorities();
-        ProductDto productDto = productService.updateProduct(id, input, userDto);
+        ProductDto productDto = productService.updateProduct(id, input, userDto.getId());
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "DELETE() /products/{id}", description = "물품 공동구매 삭제 API")
+    @Operation(summary = "DELETE() /product/{id}", description = "물품 공동구매 삭제 API")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "NO CONTENT"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -86,7 +86,20 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteProduct(@PathVariable("id") Long id) {
         UserDto userDto = userService.getMyUserWithAuthorities();
-        productService.deleteProduct(id, userDto);
+        productService.deleteProduct(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(summary = "GET() /product/{id}", description = "물품 공동구매 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @ Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDto> getProduct(@PathVariable("id") Long id) {
+        ProductDto productDto = productService.getProduct(id);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 }

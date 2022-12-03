@@ -51,4 +51,8 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private CoBuyStatus status;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
