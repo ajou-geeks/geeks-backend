@@ -18,8 +18,9 @@ create table tbl_product_user
     deleted         boolean         default false               not null,
     deleted_at      timestamp                                       null,
 
-    foreign key (product_id) references tbl_product(id),
-    foreign key (user_id) references tbl_user(id)
+    -- constraints
+    foreign key (product_id) references tbl_product (id),
+    foreign key (user_id) references tbl_user (id)
 
     ) engine = InnoDB
     default charset = utf8mb4
