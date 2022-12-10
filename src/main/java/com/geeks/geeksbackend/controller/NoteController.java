@@ -46,7 +46,7 @@ public class NoteController {
         return new ResponseEntity<>(noteListDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "GET() /note/list", description = "쪽지 목록 조회 API")
+    @Operation(summary = "GET() /note/list?id={}", description = "쪽지 목록 조회 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = NoteListDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),

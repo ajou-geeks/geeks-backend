@@ -104,7 +104,7 @@ public class DeliveryController {
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "GET() /delivery/list", description = "배달음식 공동구매 목록 조회 API")
+    @Operation(summary = "GET() /delivery/list?page={}&size={}&sort={}&query={}", description = "배달음식 공동구매 목록 조회 API")
     @Parameters({
             @Parameter(name = "page", description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
             @Parameter(name = "size", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
