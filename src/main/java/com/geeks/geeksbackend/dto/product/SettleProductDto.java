@@ -3,7 +3,7 @@ package com.geeks.geeksbackend.dto.product;
 import lombok.Getter;
 
 @Getter
-public class ProductSettleDto {
+public class SettleProductDto {
 
     private Long id;
     private String bankName;

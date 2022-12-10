@@ -1,9 +1,9 @@
-package com.geeks.geeksbackend.dto.product;
+package com.geeks.geeksbackend.dto.delivery;
 
 import lombok.Getter;
 
 @Getter
-public class ProductReceiveDto {
+public class ReceiveDeliveryDto {
 
     private Long id;
     private String pickupLocation;

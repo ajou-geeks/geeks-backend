@@ -124,7 +124,7 @@ public class DeliveryService {
                 .build();
     }
 
-    public DeliveryDto joinDelivery(DeliveryJoinDto input, Long userId) {
+    public DeliveryDto joinDelivery(JoinDeliveryDto input, Long userId) {
         Delivery delivery = deliveryRepository.findById(input.getId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
         User user = userRepository.findById(userId)
@@ -181,7 +181,7 @@ public class DeliveryService {
         return DeliveryDto.from(delivery);
     }
 
-    public DeliveryDto settleDelivery(DeliverySettleDto input, Long userId) {
+    public DeliveryDto settleDelivery(SettleDeliveryDto input, Long userId) {
         DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(input.getId(), userId)
                 .orElseThrow(() -> new NoSuchElementException());
 
@@ -206,7 +206,7 @@ public class DeliveryService {
         return DeliveryDto.from(delivery);
     }
 
-    public DeliveryDto receiveDelivery(DeliveryReceiveDto input, Long userId) {
+    public DeliveryDto receiveDelivery(ReceiveDeliveryDto input, Long userId) {
         DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(input.getId(), userId)
                 .orElseThrow(() -> new NoSuchElementException());
 

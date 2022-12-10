@@ -2,8 +2,8 @@ package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
-import com.geeks.geeksbackend.dto.product.ProductReceiveDto;
-import com.geeks.geeksbackend.dto.product.ProductSettleDto;
+import com.geeks.geeksbackend.dto.product.ReceiveProductDto;
+import com.geeks.geeksbackend.dto.product.SettleProductDto;
 import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.ProductUser;
@@ -183,7 +183,7 @@ public class ProductService {
         return ProductDto.from(product);
     }
 
-    public ProductDto settleProduct(ProductSettleDto input, Long userId) {
+    public ProductDto settleProduct(SettleProductDto input, Long userId) {
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
                 .orElseThrow(() -> new NoSuchElementException());
 
@@ -209,7 +209,7 @@ public class ProductService {
         return ProductDto.from(product);
     }
 
-    public ProductDto receiveProduct(ProductReceiveDto input, Long userId) {
+    public ProductDto receiveProduct(ReceiveProductDto input, Long userId) {
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
                 .orElseThrow(() -> new NoSuchElementException());
 
