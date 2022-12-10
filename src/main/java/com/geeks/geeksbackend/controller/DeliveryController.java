@@ -106,9 +106,9 @@ public class DeliveryController {
 
     @Operation(summary = "GET() /delivery/list?page={}&size={}&sort={}&query={}", description = "배달음식 공동구매 목록 조회 API")
     @Parameters({
-            @Parameter(name = "page", description = "검색할 페이지 (기본 1, 최대 1000)", example = "1"),
+            @Parameter(name = "page", description = "검색할 페이지 (기본 0, 최대 1000)", example = "0"),
             @Parameter(name = "size", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
-            @Parameter(name = "sort", description = "정렬 방법", example = "recent"),
+            @Parameter(name = "sort", description = "정렬 방법", example = "id"),
             @Parameter(name = "query", description = "검색할 내용", example = "아주대")
     })
     @ApiResponses({
@@ -119,7 +119,7 @@ public class DeliveryController {
     })
     @GetMapping("/list")
     public ResponseEntity<DeliveryListDto> getDeliveryList(
-            @RequestParam String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(required = false) String query, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         DeliveryListDto deliveryListDto = deliveryService.getDeliveryList(query, pageable);
         return new ResponseEntity<>(deliveryListDto, HttpStatus.OK);
     }

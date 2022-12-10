@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tbl_delivery")
 @SQLDelete(sql = "update tbl_delivery set is_deleted = true, deleted_at = now() where id = ?")
-@Where(clause = "deleted = false")
+@Where(clause = "is_deleted = false")
 @Getter
 @Setter
 @SuperBuilder
