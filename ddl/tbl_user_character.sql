@@ -11,7 +11,7 @@ create table tbl_user_character
     created_at      timestamp       default current_timestamp   not null,
     updated_by      bigint unsigned                             not null,
     updated_at      timestamp       default current_timestamp   not null on update current_timestamp,
-    deleted_by      bigint unsigned                                 null,
+    is_deleted      boolean                                         null,
     deleted_at      timestamp                                       null,
 
     -- constraints

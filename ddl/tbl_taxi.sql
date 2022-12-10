@@ -18,7 +18,7 @@ create table tbl_taxi
     created_at      timestamp       default current_timestamp   not null,
     updated_by      bigint unsigned                             not null,
     updated_at      timestamp       default current_timestamp   not null on update current_timestamp,
-    deleted         boolean         default false               not null,
+    is_deleted      boolean         default false               not null,
     deleted_at      timestamp                                       null,
 
     -- constraints

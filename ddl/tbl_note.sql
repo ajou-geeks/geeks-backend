@@ -16,7 +16,7 @@ create table tbl_note
     created_at      timestamp       default current_timestamp       null,
     updated_by      bigint unsigned                                 null,
     updated_at      timestamp       default current_timestamp       null on update current_timestamp,
-    deleted         boolean         default false                   null,
+    is_deleted      boolean         default false                   null,
     deleted_at      timestamp                                       null,
 
     -- constraints
