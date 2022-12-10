@@ -1,10 +1,10 @@
-create table tbl_user_pattern
+create table tbl_user_character
 (
     -- primary key
     id              bigint unsigned                             not null,
 
     -- columns
-    characteristic  varchar(300)                                not null,
+    type            varchar(300)                                not null,
 
     -- common columns
     created_by      bigint unsigned                             not null,
@@ -15,10 +15,10 @@ create table tbl_user_pattern
     deleted_at      timestamp                                       null,
 
     -- constraints
-    primary key (id, characteristic),
+    primary key (id, type),
     foreign key (id) references tbl_user (id)
 
     ) engine = InnoDB
     default charset = utf8mb4
     collate = utf8mb4_unicode_ci
-    comment = 'user pattern table';
+    comment = 'user character table';

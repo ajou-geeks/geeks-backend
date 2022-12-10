@@ -1,21 +1,21 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.entity.idclass.UserPatternPK;
+import com.geeks.geeksbackend.entity.idclass.UserCharacterPK;
 import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tbl_user_pattern")
+@Table(name = "tbl_user_character")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@IdClass(UserPatternPK.class)
-public class UserPattern {
+@IdClass(UserCharacterPK.class)
+public class UserCharacter {
     @Id
     private long id;
     @Id
-    private String characteristic;
+    private String type;
 }

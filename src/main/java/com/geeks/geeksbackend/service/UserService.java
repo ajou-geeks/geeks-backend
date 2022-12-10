@@ -10,10 +10,10 @@ import com.geeks.geeksbackend.dto.user.UpdateUserDto;
 import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.User;
-import com.geeks.geeksbackend.entity.UserPattern;
+import com.geeks.geeksbackend.entity.UserCharacter;
 import com.geeks.geeksbackend.exception.DuplicateUserException;
 import com.geeks.geeksbackend.exception.NotFoundUserException;
-import com.geeks.geeksbackend.repository.UserPatternRepository;
+import com.geeks.geeksbackend.repository.UserCharacterRepository;
 import com.geeks.geeksbackend.repository.UserRepository;
 import com.geeks.geeksbackend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class UserService {
 
     private final AwsS3Service awsS3Service;
     private final UserRepository userRepository;
-    private final UserPatternRepository userPatternRepository;
+    private final UserCharacterRepository userCharacterRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -60,7 +60,7 @@ public class UserService {
 
     public UserInfoDto findById(long id) {
         User user = userRepository.findById(id);
-        List<UserPattern> userPatterns = userPatternRepository.findAllById(id);
+        List<UserCharacter> userCharacters = userCharacterRepository.findAllById(id);
         if (user != null) {
             UserInfoDto userInfoDto = UserInfoDto.builder()
                     .id(user.getId())
@@ -74,7 +74,7 @@ public class UserService {
                     .pattern(user.getPattern())
                     .patternDetail(user.getPatternDetail())
                     .authorities(user.getAuthorities())
-                    .userPatterns(userPatterns)
+                    .userCharacters(userCharacters)
                     .build();
             return userInfoDto;
         }

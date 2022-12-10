@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class UserPatternPK implements Serializable {
+public class UserCharacterPK implements Serializable {
     private long id;
-    private String characteristic;
+    private String type;
 }

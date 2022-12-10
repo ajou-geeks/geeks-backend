@@ -1,7 +1,7 @@
 package com.geeks.geeksbackend.dto.user;
 
 import com.geeks.geeksbackend.entity.Authority;
-import com.geeks.geeksbackend.entity.UserPattern;
+import com.geeks.geeksbackend.entity.UserCharacter;
 import lombok.*;
 
 import java.util.List;
@@ -27,5 +27,5 @@ public class UserInfoDto {
     private String pattern;
     private String patternDetail;
     private Set<Authority> authorities;
-    private List<UserPattern> userPatterns;
+    private List<UserCharacter> userCharacters;
 }
