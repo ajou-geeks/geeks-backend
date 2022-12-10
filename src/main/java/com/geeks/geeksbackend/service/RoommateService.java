@@ -27,7 +27,7 @@ public class RoommateService {
 
     public UserInfoDto createProfile(UserProfileDto input, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
         user.setBio(input.getBio());
         user.setPattern(LifePattern.valueOfTitle(input.getPattern()));
@@ -59,7 +59,7 @@ public class RoommateService {
 
     public UserInfoDto getProfile(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
         List<UserCharacter> userCharacters = userCharacterRepository.findAllById(id);
 

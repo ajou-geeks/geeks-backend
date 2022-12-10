@@ -37,7 +37,7 @@ public class ProductService {
 
     public ProductDto createProduct(ProductDto input, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
         Product product = Product.builder()
                 .user(user)
@@ -72,7 +72,7 @@ public class ProductService {
     @Transactional
     public ProductDto updateProduct(Long id, ProductDto input, Long userId) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
         // TODO: 공동구매에 이미 참여한 사용자가 있으면 수정 불가
         // ...
@@ -93,14 +93,14 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
         productRepository.delete(product);
     }
 
     public ProductDto getProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
         if (product.getEndTime().isBefore(LocalDateTime.now())) {
             product.setStatus(CoBuyStatus.EXPIRE);
@@ -130,22 +130,22 @@ public class ProductService {
 
     public ProductDto joinProduct(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
         if (productUserRepository.existsByProductAndUser(product, user)) {
-            throw new RuntimeException("이미 참여한 공동구매 입니다.");
+            throw new RuntimeException("이미 참여한 공동구매입니다.");
         }
 
         if (product.getStatus() == CoBuyStatus.EXPIRE ||
                 product.getEndTime().isBefore(LocalDateTime.now())) {
             product.setStatus(CoBuyStatus.EXPIRE);
-            throw new RuntimeException("만료된 공동구매 입니다.");
+            throw new RuntimeException("만료된 공동구매입니다.");
         }
 
         if (product.getStatus() != CoBuyStatus.OPEN) {
-            throw new RuntimeException("참여할 수 없는 공동구매 입니다.");
+            throw new RuntimeException("참여할 수 없는 공동구매입니다.");
         }
 
         ProductUser productUser = ProductUser.builder()
@@ -163,19 +163,19 @@ public class ProductService {
 
     public ProductDto cancelProduct(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(product.getId(), user.getId())
-                .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매 입니다."));
+                .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매입니다."));
 
         if (productUser.getType() == CoBuyUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
         }
 
         if (product.getStatus() != CoBuyStatus.OPEN) {
-            throw new RuntimeException("취소할 수 없는 공동구매 입니다.");
+            throw new RuntimeException("취소할 수 없는 공동구매입니다.");
         }
 
         productUserRepository.delete(productUser);
@@ -194,7 +194,7 @@ public class ProductService {
         }
 
         if (product.getStatus() != CoBuyStatus.CLOSE) {
-            throw new RuntimeException("정산할 수 없는 공동구매 입니다.");
+            throw new RuntimeException("정산할 수 없는 공동구매입니다.");
         }
 
         product.setBankName(input.getBankName());
@@ -220,7 +220,7 @@ public class ProductService {
         }
 
         if (product.getStatus() != CoBuyStatus.SETTLE) {
-            throw new RuntimeException("수령할 수 없는 공동구매 입니다.");
+            throw new RuntimeException("수령할 수 없는 공동구매입니다.");
         }
 
         product.setPickupLocation(input.getPickupLocation());
@@ -244,7 +244,7 @@ public class ProductService {
         }
 
         if (product.getStatus() != CoBuyStatus.RECEIVE) {
-            throw new RuntimeException("완료할 수 없는 공동구매 입니다.");
+            throw new RuntimeException("완료할 수 없는 공동구매입니다.");
         }
 
         product.setStatus(CoBuyStatus.COMPLETE);
