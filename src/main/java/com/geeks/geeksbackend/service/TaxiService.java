@@ -5,7 +5,7 @@ import com.geeks.geeksbackend.dto.taxi.CreateDto;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.Taxi;
 import com.geeks.geeksbackend.entity.TaxiUser;
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import com.geeks.geeksbackend.repository.UserRepository;
 import com.geeks.geeksbackend.repository.TaxiUserRepository;
 import com.geeks.geeksbackend.repository.TaxiRepository;
@@ -48,7 +48,7 @@ public class TaxiService {
                 .maxParticipant(createDto.getMaxParticipant())
                 .source(createDto.getSource())
                 .destination(createDto.getDestination())
-                .status(CoBuyStatus.OPEN)
+                .status(GroupBuyingStatus.OPEN)
                 .createdBy(createDto.getUserId())
                 .updatedBy(createDto.getUserId())
                 .build();
@@ -85,7 +85,7 @@ public class TaxiService {
             if (taxi.getUserId() != changeDto.getUserId()) {
                 return false;
             }
-            taxi.setStatus(CoBuyStatus.COMPLETE);;
+            taxi.setStatus(GroupBuyingStatus.COMPLETE);;
             taxi.setUpdatedAt(LocalDateTime.now());
             taxiRepository.save(taxi);
             return true;
@@ -110,7 +110,7 @@ public class TaxiService {
                 return 1;
             }
 
-            if (taxi.getStatus() != CoBuyStatus.OPEN) {
+            if (taxi.getStatus() != GroupBuyingStatus.OPEN) {
                 return 2;
             }
 

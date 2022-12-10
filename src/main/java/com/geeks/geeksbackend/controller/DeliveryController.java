@@ -201,7 +201,7 @@ public class DeliveryController {
 
     @Operation(summary = "POST() /delivery/confirm", description = "배달음식 공동구매 완료 API")
     @Parameters({
-            @Parameter(name = "id", description = "물품ID", example = "1")
+            @Parameter(name = "id", description = "생필품 ID", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),

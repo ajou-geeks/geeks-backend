@@ -2,8 +2,8 @@ package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.delivery.*;
 import com.geeks.geeksbackend.entity.*;
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
-import com.geeks.geeksbackend.enumeration.CoBuyUserType;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingUserType;
 import com.geeks.geeksbackend.enumeration.DeliveryType;
 import com.geeks.geeksbackend.repository.DeliveryRepository;
 import com.geeks.geeksbackend.repository.DeliveryUserRepository;
@@ -43,7 +43,7 @@ public class DeliveryService {
                 .endTime(LocalDateTime.parse(input.getEndTime(), DateTimeFormatter.ISO_DATE_TIME))
                 .destination(input.getDestination())
                 .thumbnailUrl(input.getThumbnailUrl())
-                .status(CoBuyStatus.OPEN)
+                .status(GroupBuyingStatus.OPEN)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -53,7 +53,7 @@ public class DeliveryService {
         DeliveryUser deliveryUser = DeliveryUser.builder()
                 .delivery(delivery)
                 .user(user)
-                .type(CoBuyUserType.MANAGER)
+                .type(GroupBuyingUserType.MANAGER)
                 .amount(input.getAmount())
                 .createdBy(userId)
                 .updatedBy(userId)
@@ -99,7 +99,7 @@ public class DeliveryService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
         if (delivery.getEndTime().isBefore(LocalDateTime.now())) {
-            delivery.setStatus(CoBuyStatus.EXPIRE);
+            delivery.setStatus(GroupBuyingStatus.EXPIRE);
         }
 
         return DeliveryDto.from(delivery);
@@ -111,7 +111,7 @@ public class DeliveryService {
 
         for (Delivery delivery : page.getContent()) {
             if (delivery.getEndTime().isBefore(LocalDateTime.now())) {
-                delivery.setStatus(CoBuyStatus.EXPIRE);
+                delivery.setStatus(GroupBuyingStatus.EXPIRE);
             }
             deliveries.add(delivery);
         }
@@ -134,20 +134,20 @@ public class DeliveryService {
             throw new RuntimeException("이미 참여한 공동구매입니다.");
         }
 
-        if (delivery.getStatus() == CoBuyStatus.EXPIRE ||
+        if (delivery.getStatus() == GroupBuyingStatus.EXPIRE ||
                 delivery.getEndTime().isBefore(LocalDateTime.now())) {
-            delivery.setStatus(CoBuyStatus.EXPIRE);
+            delivery.setStatus(GroupBuyingStatus.EXPIRE);
             throw new RuntimeException("만료된 공동구매입니다.");
         }
 
-        if (delivery.getStatus() != CoBuyStatus.OPEN) {
+        if (delivery.getStatus() != GroupBuyingStatus.OPEN) {
             throw new RuntimeException("참여할 수 없는 공동구매입니다.");
         }
 
         DeliveryUser deliveryUser = DeliveryUser.builder()
                 .delivery(delivery)
                 .user(user)
-                .type(CoBuyUserType.MEMBER)
+                .type(GroupBuyingUserType.MEMBER)
                 .amount(input.getAmount())
                 .description(input.getDescription())
                 .createdBy(userId)
@@ -168,11 +168,11 @@ public class DeliveryService {
         DeliveryUser deliveryUser = deliveryUserRepository.findByDeliveryIdAndUserId(delivery.getId(), user.getId())
                 .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매입니다."));
 
-        if (deliveryUser.getType() == CoBuyUserType.MANAGER) {
+        if (deliveryUser.getType() == GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
         }
 
-        if (delivery.getStatus() != CoBuyStatus.OPEN) {
+        if (delivery.getStatus() != GroupBuyingStatus.OPEN) {
             throw new RuntimeException("취소할 수 없는 공동구매입니다.");
         }
 
@@ -187,18 +187,18 @@ public class DeliveryService {
 
         Delivery delivery = deliveryUser.getDelivery();
 
-        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+        if (deliveryUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
         }
 
-        if (delivery.getStatus() != CoBuyStatus.CLOSE) {
+        if (delivery.getStatus() != GroupBuyingStatus.CLOSE) {
             throw new RuntimeException("정산할 수 없는 공동구매입니다.");
         }
 
         delivery.setBankName(input.getBankName());
         delivery.setAccountNumber(input.getAccountNumber());
         delivery.setTotalAmount(input.getTotalAmount());
-        delivery.setStatus(CoBuyStatus.SETTLE);
+        delivery.setStatus(GroupBuyingStatus.SETTLE);
 
         // TODO: 공동구매 참여자들에게 정산 알림 전송 (배달비 고려)
         // ...
@@ -212,17 +212,17 @@ public class DeliveryService {
 
         Delivery delivery = deliveryUser.getDelivery();
 
-        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+        if (deliveryUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
         }
 
-        if (delivery.getStatus() != CoBuyStatus.SETTLE) {
+        if (delivery.getStatus() != GroupBuyingStatus.SETTLE) {
             throw new RuntimeException("수령할 수 없는 공동구매입니다.");
         }
 
         delivery.setPickupLocation(input.getPickupLocation());
         delivery.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
-        delivery.setStatus(CoBuyStatus.RECEIVE);
+        delivery.setStatus(GroupBuyingStatus.RECEIVE);
 
         // TODO: 공동구매 참여자들에게 수령 알림 전송
         // ...
@@ -236,15 +236,15 @@ public class DeliveryService {
 
         Delivery delivery = deliveryUser.getDelivery();
 
-        if (deliveryUser.getType() != CoBuyUserType.MANAGER) {
+        if (deliveryUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
         }
 
-        if (delivery.getStatus() != CoBuyStatus.RECEIVE) {
+        if (delivery.getStatus() != GroupBuyingStatus.RECEIVE) {
             throw new RuntimeException("완료할 수 없는 공동구매입니다.");
         }
 
-        delivery.setStatus(CoBuyStatus.COMPLETE);
+        delivery.setStatus(GroupBuyingStatus.COMPLETE);
 
         return DeliveryDto.from(delivery);
     }
