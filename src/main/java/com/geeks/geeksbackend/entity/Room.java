@@ -9,20 +9,23 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tbl_message")
+@Table(name = "tbl_room")
 @Getter
 @Setter
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message extends BaseEntity {
+public class Room extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String content;
+
     @ManyToOne
-    private User from;
+    @JoinColumn(name = "inviter_id")
+    private User inviter;
+
     @ManyToOne
-    private User to;
+    @JoinColumn(name = "invitee_id")
+    private User invitee;
 }
