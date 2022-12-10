@@ -48,6 +48,9 @@ public class NoteController {
     }
 
     @Operation(summary = "GET() /note/list?id={}", description = "쪽지 목록 조회 API")
+    @Parameters({
+            @Parameter(name = "id", description = "대화방 ID", example = "1")
+    })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = NoteListDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
