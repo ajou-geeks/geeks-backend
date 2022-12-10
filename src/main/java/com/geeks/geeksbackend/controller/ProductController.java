@@ -1,7 +1,6 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.product.*;
-import com.geeks.geeksbackend.dto.user.UserDto;
 import com.geeks.geeksbackend.service.UserService;
 import com.geeks.geeksbackend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -174,7 +173,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/settle")
-    public ResponseEntity<ProductDto> settleProduct(@RequestBody ProductSettleDto input) {
+    public ResponseEntity<ProductDto> settleProduct(@RequestBody SettleProductDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         ProductDto productDto = productService.settleProduct(input, userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
@@ -193,7 +192,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/receive")
-    public ResponseEntity<ProductDto> receiveProduct(@RequestBody ProductReceiveDto input) {
+    public ResponseEntity<ProductDto> receiveProduct(@RequestBody ReceiveProductDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         ProductDto productDto = productService.receiveProduct(input, userId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);

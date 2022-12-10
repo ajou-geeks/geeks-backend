@@ -1,7 +1,6 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.delivery.*;
-import com.geeks.geeksbackend.entity.Delivery;
 import com.geeks.geeksbackend.service.DeliveryService;
 import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -138,7 +137,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/join")
-    public ResponseEntity<DeliveryDto> joinDelivery(@RequestBody DeliveryJoinDto input) {
+    public ResponseEntity<DeliveryDto> joinDelivery(@RequestBody JoinDeliveryDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         DeliveryDto deliveryDto = deliveryService.joinDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
@@ -175,7 +174,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/settle")
-    public ResponseEntity<DeliveryDto> settleDelivery(@RequestBody DeliverySettleDto input) {
+    public ResponseEntity<DeliveryDto> settleDelivery(@RequestBody SettleDeliveryDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         DeliveryDto deliveryDto = deliveryService.settleDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
@@ -194,7 +193,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/receive")
-    public ResponseEntity<DeliveryDto> receiveDelivery(@RequestBody DeliveryReceiveDto input) {
+    public ResponseEntity<DeliveryDto> receiveDelivery(@RequestBody ReceiveDeliveryDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         DeliveryDto deliveryDto = deliveryService.receiveDelivery(input, userId);
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);

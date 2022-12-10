@@ -3,7 +3,7 @@ package com.geeks.geeksbackend.dto.delivery;
 import lombok.Getter;
 
 @Getter
-public class DeliveryJoinDto {
+public class JoinDeliveryDto {
 
     private Long id;
     private int amount;
