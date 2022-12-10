@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.user.UserInfoDto;
+import com.geeks.geeksbackend.dto.user.UserInfoListDto;
 import com.geeks.geeksbackend.dto.user.UserProfileDto;
 import com.geeks.geeksbackend.service.RoommateService;
 import com.geeks.geeksbackend.service.UserService;
@@ -59,5 +60,19 @@ public class RoommateController {
     public ResponseEntity<UserInfoDto> getProfile(@PathVariable("id") Long id) {
         UserInfoDto userInfoDto = roommateService.getProfile(id);
         return new ResponseEntity<>(userInfoDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "GET() /roommate/list", description = "룸메이트 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserInfoListDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/list")
+    public ResponseEntity<UserInfoListDto> getProfileList() {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        UserInfoListDto userInfoListDto = roommateService.getProfileList(userId);
+        return new ResponseEntity<>(userInfoListDto, HttpStatus.OK);
     }
 }

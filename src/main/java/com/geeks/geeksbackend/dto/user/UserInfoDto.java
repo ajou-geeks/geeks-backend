@@ -30,6 +30,7 @@ public class UserInfoDto {
     private String patternDetail;
     private List<String> userCharacters;
     private Set<Authority> authorities;
+    private int score;
 
     public static UserInfoDto from(User user, List<UserCharacter> userCharacters) {
         if (user == null) return null;
@@ -52,6 +53,31 @@ public class UserInfoDto {
                                 .map(e -> e.getType().title())
                                 .collect(Collectors.toList()))
                 .authorities(user.getAuthorities())
+                .build();
+    }
+
+    public static UserInfoDto from(User user, List<UserCharacter> userCharacters, int score) {
+        if (user == null) return null;
+
+        return UserInfoDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(null)
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .filename(user.getFilename())
+                .dormitory(user.getDormitory())
+                .ho(user.getHo())
+                .bio(user.getBio())
+                .pattern(user.getPattern().title())
+                .patternDetail(user.getPatternDetail())
+                .userCharacters(userCharacters.isEmpty() ? null :
+                        userCharacters.stream()
+                                .map(e -> e.getType().title())
+                                .collect(Collectors.toList()))
+                .authorities(user.getAuthorities())
+                .score(score)
                 .build();
     }
 }
