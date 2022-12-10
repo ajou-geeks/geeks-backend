@@ -67,4 +67,18 @@ public class NoteService {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    public NoteListDto getNoteList(Long roomId, Long userId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 대화방입니다."));
+
+        List<Note> notes = noteRepository.findAllByRoomIdOrderByIdDesc(room.getId());
+
+        return NoteListDto.builder()
+                .totalCount((long) notes.size())
+                .elements(notes.stream()
+                        .map(n -> NoteDto.from(n, userId))
+                        .collect(Collectors.toList()))
+                .build();
+    }
 }

@@ -16,10 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "note", description = "쪽지 API")
 @SecurityRequirement(name = "bearerAuth")
@@ -46,6 +43,20 @@ public class NoteController {
     public ResponseEntity<NoteListDto> sendNote(@RequestBody SendNoteDto input) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         NoteListDto noteListDto = noteService.sendNote(input, userId);
+        return new ResponseEntity<>(noteListDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "GET() /note/list", description = "쪽지 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = NoteListDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/list")
+    public ResponseEntity<NoteListDto> getNoteList(@RequestParam("id") Long roomId) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        NoteListDto noteListDto = noteService.getNoteList(roomId, userId);
         return new ResponseEntity<>(noteListDto, HttpStatus.OK);
     }
 }
