@@ -28,10 +28,11 @@ create table tbl_product
     created_at      timestamp       default current_timestamp   not null,
     updated_by      bigint unsigned                             not null,
     updated_at      timestamp       default current_timestamp   not null on update current_timestamp,
-    deleted         boolean         default false               not null,
+    is_deleted      boolean         default false               not null,
     deleted_at      timestamp                                       null,
 
-    foreign key (user_id) references tbl_user(id)
+    -- constraints
+    foreign key (user_id) references tbl_user (id)
 
     ) engine = InnoDB
     default charset = utf8mb4

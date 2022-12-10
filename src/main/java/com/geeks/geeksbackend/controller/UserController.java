@@ -1,7 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.user.UserInfoDto;
-import com.geeks.geeksbackend.dto.user.UpdateUserDto;
+import com.geeks.geeksbackend.dto.user.UserProfileDto;
 import com.geeks.geeksbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +40,7 @@ public class UserController {
     @Operation(summary = "PATCH() /user/{id}", description = "유저 정보 수정")
     @Parameters({
             @Parameter(name = "id", description = "회원 아이디", example = "1"),
-            @Parameter(name = "detail", description = "자기소개", example = "안녕하세요"),
+            @Parameter(name = "bio", description = "자기소개", example = "안녕하세요"),
             @Parameter(name = "pattern", description = "생활패턴", example = "야행성"),
             @Parameter(name = "patternDetail", description = "생활패턴 설명", example = "새벽 4시에 자는 편입니다.")
     })
@@ -50,9 +50,9 @@ public class UserController {
     })
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable("id") long id,
-                                          @RequestBody UpdateUserDto updateUserDto) {
+                                          @RequestBody UserProfileDto userProfileDto) {
         try {
-            userService.update(id, updateUserDto);
+            userService.update(id, userProfileDto);
             return ResponseEntity.ok().body("유저 정보 수정 성공");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유저 정보 수정 실패");

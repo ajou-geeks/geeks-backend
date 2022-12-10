@@ -12,7 +12,7 @@ create table tbl_user
     filename        varchar(300)                                    null,
     dormitory       varchar(200)                                    null,
     ho              varchar(20)                                     null,
-    detail          varchar(1000)                                   null,
+    bio             varchar(1000)                                   null,
     pattern         varchar(100)                                    null,
     pattern_detail  varchar(500)                                    null,
 
@@ -21,7 +21,7 @@ create table tbl_user
     created_at      timestamp       default current_timestamp       null,
     updated_by      bigint unsigned                                 null,
     updated_at      timestamp       default current_timestamp       null on update current_timestamp,
-    deleted         boolean         default false                   null,
+    is_deleted      boolean         default false                   null,
     deleted_at      timestamp                                       null
 
     ) engine = InnoDB

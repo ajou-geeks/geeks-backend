@@ -3,17 +3,21 @@ package com.geeks.geeksbackend.service;
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.geeks.geeksbackend.dto.user.FileDto;
 import com.geeks.geeksbackend.dto.user.UserInfoDto;
-import com.geeks.geeksbackend.dto.user.UpdateUserDto;
 import com.geeks.geeksbackend.dto.user.UserDto;
+import com.geeks.geeksbackend.dto.user.UserProfileDto;
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.User;
-import com.geeks.geeksbackend.entity.UserPattern;
+import com.geeks.geeksbackend.entity.UserCharacter;
+import com.geeks.geeksbackend.enumeration.CharacterType;
+import com.geeks.geeksbackend.enumeration.LifePattern;
 import com.geeks.geeksbackend.exception.DuplicateUserException;
 import com.geeks.geeksbackend.exception.NotFoundUserException;
-import com.geeks.geeksbackend.repository.UserPatternRepository;
+import com.geeks.geeksbackend.repository.UserCharacterRepository;
 import com.geeks.geeksbackend.repository.UserRepository;
 import com.geeks.geeksbackend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +35,7 @@ public class UserService {
 
     private final AwsS3Service awsS3Service;
     private final UserRepository userRepository;
-    private final UserPatternRepository userPatternRepository;
+    private final UserCharacterRepository userCharacterRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -60,22 +64,9 @@ public class UserService {
 
     public UserInfoDto findById(long id) {
         User user = userRepository.findById(id);
-        List<UserPattern> userPatterns = userPatternRepository.findAllById(id);
+        List<UserCharacter> userCharacters = userCharacterRepository.findAllById(id);
         if (user != null) {
-            UserInfoDto userInfoDto = UserInfoDto.builder()
-                    .id(user.getId())
-                    .password(null)
-                    .email(user.getEmail())
-                    .profileImage(user.getProfileImage())
-                    .filename(user.getFilename())
-                    .dormitory(user.getDormitory())
-                    .ho(user.getHo())
-                    .detail(user.getDetail())
-                    .pattern(user.getPattern())
-                    .patternDetail(user.getPatternDetail())
-                    .authorities(user.getAuthorities())
-                    .userPatterns(userPatterns)
-                    .build();
+            UserInfoDto userInfoDto = UserInfoDto.from(user, userCharacters);
             return userInfoDto;
         }
         return null;
@@ -85,12 +76,12 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public void update(long id, UpdateUserDto updateUserDto) {
+    public void update(long id, UserProfileDto userProfileDto) {
         User selectedUser = userRepository.findById(id);
         if (selectedUser != null) {
-            selectedUser.setDetail(updateUserDto.getDetail() == null ? selectedUser.getDetail() : updateUserDto.getDetail());
-            selectedUser.setPattern(updateUserDto.getPattern() == null ? selectedUser.getPattern() : updateUserDto.getPattern());
-            selectedUser.setPatternDetail(updateUserDto.getPatternDetail() == null ? selectedUser.getPatternDetail() : updateUserDto.getPatternDetail());
+            selectedUser.setBio(userProfileDto.getBio() == null ? selectedUser.getBio() : userProfileDto.getBio());
+            selectedUser.setPattern(userProfileDto.getPattern() == null ? selectedUser.getPattern() : LifePattern.valueOfTitle(userProfileDto.getPattern()));
+            selectedUser.setPatternDetail(userProfileDto.getPatternDetail() == null ? selectedUser.getPatternDetail() : userProfileDto.getPatternDetail());
             userRepository.save(selectedUser);
         }
     }
