@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.UserCharacter;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfoDto {
 
     private Long id;
@@ -30,7 +32,7 @@ public class UserInfoDto {
     private String patternDetail;
     private List<String> userCharacters;
     private Set<Authority> authorities;
-    private int score;
+    private Integer score;
 
     public static UserInfoDto from(User user, List<UserCharacter> userCharacters) {
         if (user == null) return null;

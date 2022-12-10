@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.controller;
 
 import com.geeks.geeksbackend.dto.note.NoteListDto;
+import com.geeks.geeksbackend.dto.note.RoomListDto;
 import com.geeks.geeksbackend.dto.note.SendNoteDto;
 import com.geeks.geeksbackend.service.NoteService;
 import com.geeks.geeksbackend.service.UserService;
@@ -46,7 +47,7 @@ public class NoteController {
         return new ResponseEntity<>(noteListDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "GET() /note/list", description = "쪽지 목록 조회 API")
+    @Operation(summary = "GET() /note/list?id={}", description = "쪽지 목록 조회 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = NoteListDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -58,5 +59,19 @@ public class NoteController {
         Long userId = userService.getMyUserWithAuthorities().getId();
         NoteListDto noteListDto = noteService.getNoteList(roomId, userId);
         return new ResponseEntity<>(noteListDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "GET() /note/room", description = "대화방 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RoomListDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/room")
+    public ResponseEntity<RoomListDto> getRoomList() {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        RoomListDto roomListDto = noteService.getRoomList(userId);
+        return new ResponseEntity<>(roomListDto, HttpStatus.OK);
     }
 }

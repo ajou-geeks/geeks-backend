@@ -49,7 +49,7 @@ public class RoommateController {
         return new ResponseEntity<>(userInfoDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "POST() /roommate/profile", description = "룸메이트 프로필 조회 API")
+    @Operation(summary = "POST() /roommate/profile/{id}", description = "룸메이트 프로필 조회 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "CREATED", content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
