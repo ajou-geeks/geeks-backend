@@ -1,6 +1,7 @@
 package com.geeks.geeksbackend.service;
 
 import com.geeks.geeksbackend.dto.delivery.*;
+import com.geeks.geeksbackend.dto.notice.NoticeDto;
 import com.geeks.geeksbackend.entity.*;
 import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import com.geeks.geeksbackend.enumeration.GroupBuyingUserType;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static com.geeks.geeksbackend.enumeration.MessageTemplate.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -29,6 +32,8 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final UserRepository userRepository;
     private final DeliveryUserRepository deliveryUserRepository;
+
+    private final NoticeService noticeService;
 
     public DeliveryDto createDelivery(DeliveryDto input, Long userId) {
         User user = userRepository.findById(userId)
@@ -155,6 +160,17 @@ public class DeliveryService {
                 .build();
 
         deliveryUserRepository.save(deliveryUser);
+
+        // 진행자에게 [공동구매 참여] 알림 전송
+        NoticeDto message = NoticeDto.builder()
+                .object("DELIVERY")
+                .title(GROUP_BUYING_JOIN_01.getTitle())
+                .content(GROUP_BUYING_JOIN_01.getContent())
+                .value1(user.getName())
+                .value2(delivery.getName())
+                .build();
+
+        noticeService.sendNotice(message, delivery.getUser().getId());
 
         return DeliveryDto.from(delivery);
     }

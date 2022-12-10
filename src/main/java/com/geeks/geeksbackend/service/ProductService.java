@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.service;
 
+import com.geeks.geeksbackend.dto.notice.NoticeDto;
 import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
 import com.geeks.geeksbackend.dto.product.ReceiveProductDto;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static com.geeks.geeksbackend.enumeration.MessageTemplate.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ProductUserRepository productUserRepository;
+
+    private final NoticeService noticeService;
 
     public ProductDto createProduct(ProductDto input, Long userId) {
         User user = userRepository.findById(userId)
@@ -157,6 +162,17 @@ public class ProductService {
                 .build();
 
         productUserRepository.save(productUser);
+
+        // 진행자에게 [공동구매 참여] 알림 전송
+        NoticeDto message = NoticeDto.builder()
+                .object("PRODUCT")
+                .title(GROUP_BUYING_JOIN_01.getTitle())
+                .content(GROUP_BUYING_JOIN_01.getContent())
+                .value1(user.getName())
+                .value2(product.getName())
+                .build();
+
+        noticeService.sendNotice(message, product.getUser().getId());
 
         return ProductDto.from(product);
     }

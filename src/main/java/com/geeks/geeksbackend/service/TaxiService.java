@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.service;
 
+import com.geeks.geeksbackend.dto.notice.NoticeDto;
 import com.geeks.geeksbackend.dto.taxi.ChangeDto;
 import com.geeks.geeksbackend.dto.taxi.CreateDto;
 import com.geeks.geeksbackend.entity.User;
@@ -18,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import static com.geeks.geeksbackend.enumeration.MessageTemplate.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class TaxiService {
     private final UserRepository userRepository;
     private final TaxiRepository taxiRepository;
     private final TaxiUserRepository taxiUserRepository;
+
+    private final NoticeService noticeService;
 
     public List<Taxi> getTaxis() {
         return taxiRepository.findAll();
@@ -128,6 +133,18 @@ public class TaxiService {
                         .build();
 
                 taxiUserRepository.save(newTaxiUser);
+
+                // 진행자에게 [공동구매 참여] 알림 전송
+                NoticeDto message = NoticeDto.builder()
+                        .object("TAXI")
+                        .title(GROUP_BUYING_JOIN_01.getTitle())
+                        .content(GROUP_BUYING_JOIN_01.getContent())
+                        .value1(user.getName())
+                        .value2(taxi.getDestination())
+                        .build();
+
+                noticeService.sendNotice(message, taxi.getUserId());
+
                 return 0;
             }
             return 5;
