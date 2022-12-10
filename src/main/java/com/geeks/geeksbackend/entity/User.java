@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
+import com.geeks.geeksbackend.enumeration.LifePattern;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,8 +27,9 @@ public class User {
     private String filename;        // 입주확인서 파일 이름
     private String dormitory;       // 기숙사
     private String ho;              // 호실
-    private String detail;          // 자기소개
-    private String pattern;         // 생활패턴
+    private String bio;             // 자기소개
+    @Enumerated(EnumType.STRING)
+    private LifePattern pattern;    // 생활패턴
     @Column(name = "pattern_detail")
     private String patternDetail;   // 생활패턴 소개
 
