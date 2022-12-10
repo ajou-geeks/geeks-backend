@@ -66,23 +66,7 @@ public class UserService {
         User user = userRepository.findById(id);
         List<UserCharacter> userCharacters = userCharacterRepository.findAllById(id);
         if (user != null) {
-            UserInfoDto userInfoDto = UserInfoDto.builder()
-                    .id(user.getId())
-                    .password(null)
-                    .email(user.getEmail())
-                    .profileImage(user.getProfileImage())
-                    .filename(user.getFilename())
-                    .dormitory(user.getDormitory())
-                    .ho(user.getHo())
-                    .bio(user.getBio())
-                    .pattern(user.getPattern().title())
-                    .patternDetail(user.getPatternDetail())
-                    .authorities(user.getAuthorities())
-                    .userCharacters(userCharacters.isEmpty() ? null
-                            : userCharacters.stream()
-                            .map(e -> e.getType().title())
-                            .collect(Collectors.toList()))
-                    .build();
+            UserInfoDto userInfoDto = UserInfoDto.from(user, userCharacters);
             return userInfoDto;
         }
         return null;

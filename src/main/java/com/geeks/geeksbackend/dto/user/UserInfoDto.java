@@ -2,10 +2,12 @@ package com.geeks.geeksbackend.dto.user;
 
 import com.geeks.geeksbackend.entity.Authority;
 import com.geeks.geeksbackend.entity.User;
+import com.geeks.geeksbackend.entity.UserCharacter;
 import lombok.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -29,7 +31,7 @@ public class UserInfoDto {
     private List<String> userCharacters;
     private Set<Authority> authorities;
 
-    public static UserInfoDto from(User user, List<String> userCharacters) {
+    public static UserInfoDto from(User user, List<UserCharacter> userCharacters) {
         if (user == null) return null;
 
         return UserInfoDto.builder()
@@ -42,9 +44,13 @@ public class UserInfoDto {
                 .filename(user.getFilename())
                 .dormitory(user.getDormitory())
                 .ho(user.getHo())
+                .bio(user.getBio())
                 .pattern(user.getPattern().title())
                 .patternDetail(user.getPatternDetail())
-                .userCharacters(userCharacters)
+                .userCharacters(userCharacters.isEmpty() ? null :
+                        userCharacters.stream()
+                                .map(e -> e.getType().title())
+                                .collect(Collectors.toList()))
                 .authorities(user.getAuthorities())
                 .build();
     }

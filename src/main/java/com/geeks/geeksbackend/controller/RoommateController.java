@@ -16,10 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "roommate", description = "룸메이트 API")
 @SecurityRequirement(name = "bearerAuth")
@@ -49,5 +46,18 @@ public class RoommateController {
         Long userId = userService.getMyUserWithAuthorities().getId();
         UserInfoDto userInfoDto = roommateService.createProfile(input, userId);
         return new ResponseEntity<>(userInfoDto, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "POST() /roommate/profile", description = "룸메이트 프로필 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "CREATED", content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<UserInfoDto> getProfile(@PathVariable("id") Long id) {
+        UserInfoDto userInfoDto = roommateService.getProfile(id);
+        return new ResponseEntity<>(userInfoDto, HttpStatus.OK);
     }
 }

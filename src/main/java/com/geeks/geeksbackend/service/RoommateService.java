@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,22 +33,36 @@ public class RoommateService {
         user.setPattern(LifePattern.valueOfTitle(input.getPattern()));
         user.setPatternDetail(input.getPatternDetail());
 
-        List<UserCharacter> userCharacters = userCharacterRepository.findAllById(userId);
-        if (!userCharacters.isEmpty()) {
-            userCharacterRepository.deleteAllInBatch(userCharacters);
+        List<UserCharacter> toBeDeletedUserCharacters = userCharacterRepository.findAllById(userId);
+        List<UserCharacter> userCharacters = new ArrayList<>();
+
+        if (!toBeDeletedUserCharacters.isEmpty()) {
+            userCharacterRepository.deleteAllInBatch(toBeDeletedUserCharacters);
         }
 
-        for (String type : input.getCharacterType()) {
-            UserCharacter userCharacter = UserCharacter.builder()
-                    .id(userId)
-                    .type(CharacterType.valueOfTitle(type))
-                    .createdBy(userId)
-                    .updatedBy(userId)
-                    .build();
+        if (!input.getCharacterType().isEmpty()) {
+            for (String type : input.getCharacterType()) {
+                UserCharacter userCharacter = UserCharacter.builder()
+                        .id(userId)
+                        .type(CharacterType.valueOfTitle(type))
+                        .createdBy(userId)
+                        .updatedBy(userId)
+                        .build();
 
-            userCharacterRepository.save(userCharacter);
+                userCharacters.add(userCharacter);
+            }
+            userCharacterRepository.saveAll(userCharacters);
         }
 
-        return UserInfoDto.from(user, input.getCharacterType());
+        return UserInfoDto.from(user, userCharacters);
+    }
+
+    public UserInfoDto getProfile(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자 입니다."));
+
+        List<UserCharacter> userCharacters = userCharacterRepository.findAllById(id);
+
+        return UserInfoDto.from(user, userCharacters);
     }
 }
