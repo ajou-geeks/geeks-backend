@@ -24,8 +24,9 @@ public class RoommateService {
     private final UserRepository userRepository;
     private final UserCharacterRepository userCharacterRepository;
 
-    private static final int SCORE_WITH_MATCHING_PATTERN = 50;
-    private static final int SCORE_WITH_MATCHING_CHARACTER = 10;
+    private static final int SCORE_WITH_MATCHING_DORMITORY = 30;
+    private static final int SCORE_WITH_MATCHING_PATTERN = 30;
+    private static final int SCORE_WITH_MATCHING_CHARACTER = 5;
     private static final int MAX_SCORE = 100;
 
     public UserInfoDto createProfile(UserProfileDto input, Long userId) {
@@ -82,12 +83,13 @@ public class RoommateService {
                 .map(e -> e.getType())
                 .collect(Collectors.toList());
 
-        List<User> targetUsers = userRepository.findByPatternAndIdNot(sourceUser.getPattern(), userId);
+        List<User> targetUsers = userRepository.findByDormitoryEqualsAndIdNot(sourceUser.getDormitory(), sourceUser.getId());
         List<UserInfoDto> toBeSortedTargetUsers = new ArrayList<>();
 
         for (User targetUser : targetUsers) {
             List<UserCharacter> targetUserCharacters = userCharacterRepository.findAllById(targetUser.getId());
-            int score = SCORE_WITH_MATCHING_PATTERN;
+            int score = SCORE_WITH_MATCHING_DORMITORY;
+            score += targetUser.getPattern() == sourceUser.getPattern() ? SCORE_WITH_MATCHING_PATTERN : 0;
 
             if (!targetUserCharacters.isEmpty()) {
                 Set<CharacterType> commonCharacters = new HashSet<>(sourceCharacterTypes);
