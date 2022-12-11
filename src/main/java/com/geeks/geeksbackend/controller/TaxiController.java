@@ -50,14 +50,14 @@ public class TaxiController {
         return ResponseEntity.ok().body(taxiService.getTaxi(id));
     }
 
-    @Operation(summary = "GET() /taxi/member/{id}", description = "택시 공동구매 참여자 조회 API")
+    @Operation(summary = "GET() /taxi/user/{id}", description = "택시 공동구매 참여자 조회 API")
     @Parameters({
             @Parameter(name = "id", description = "택시 아이디", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "택시 공동구매 참여자 조회 성공")
     })
-    @GetMapping("/member/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<?> getTaxiMembers(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(taxiService.getTaxiMembers(id));
     }
