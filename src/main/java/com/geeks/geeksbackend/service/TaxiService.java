@@ -85,7 +85,7 @@ public class TaxiService {
             if (taxi.getUserId() != changeDto.getUserId()) {
                 return false;
             }
-            taxi.setStatus(CoBuyStatus.COMPLETE);;
+            taxi.setStatus(CoBuyStatus.COMPLETE);
             taxi.setUpdatedAt(LocalDateTime.now());
             taxiRepository.save(taxi);
             return true;

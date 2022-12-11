@@ -48,7 +48,7 @@ public class TaxiController {
         return ResponseEntity.ok().body(taxiService.getTaxi(id));
     }
 
-    @Operation(summary = "GET() /taxi/user/id}", description = "택시 공동구매 참여자 조회 API")
+    @Operation(summary = "GET() /taxi/user/{id}", description = "택시 공동구매 참여자 조회 API")
     @Parameters({
             @Parameter(name = "id", description = "택시 아이디", example = "1")
     })
