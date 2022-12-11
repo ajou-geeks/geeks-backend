@@ -16,12 +16,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "taxi", description = "공동구매 택시 API")
 @RestController
 @RequestMapping("/taxi")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class TaxiController {
 
     private final UserService userService;
@@ -56,8 +58,13 @@ public class TaxiController {
             @ApiResponse(responseCode = "200", description = "택시 공동구매 참여자 조회 성공")
     })
     @GetMapping("/user/{id}")
+<<<<<<< HEAD
     public ResponseEntity<?> getTaxiUsers(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(taxiService.getTaxiUsers(id));
+=======
+    public ResponseEntity<?> getTaxiMembers(@PathVariable("id") long id) {
+        return ResponseEntity.ok().body(taxiService.getTaxiMembers(id));
+>>>>>>> 7fb144620e79f5e30a38df3ee6f21bc4476ada97
     }
 
     @Operation(summary = "POST() /taxi", description = "택시 공동구매 생성 API")
