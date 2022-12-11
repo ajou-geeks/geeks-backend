@@ -16,12 +16,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "taxi", description = "공동구매 택시 API")
 @RestController
 @RequestMapping("/taxi")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class TaxiController {
 
     private final MemberService memberService;
@@ -48,7 +50,7 @@ public class TaxiController {
         return ResponseEntity.ok().body(taxiService.getTaxi(id));
     }
 
-    @Operation(summary = "GET() /taxi/member/id}", description = "택시 공동구매 참여자 조회 API")
+    @Operation(summary = "GET() /taxi/member/{id}", description = "택시 공동구매 참여자 조회 API")
     @Parameters({
             @Parameter(name = "id", description = "택시 아이디", example = "1")
     })
