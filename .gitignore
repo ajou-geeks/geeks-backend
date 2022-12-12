@@ -39,6 +39,7 @@ out/
 ### static files ###
 **/src/main/resources/static/**
 **/src/main/resources/files
+**/src/main/resources/application.yml
 
 ### pem ###
 geeks.pem
