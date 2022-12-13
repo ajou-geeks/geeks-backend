@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum CoBuyUserType {
+public enum GroupBuyingUserType {
     MANAGER("MANAGER"),
     MEMBER("MEMBER");
 

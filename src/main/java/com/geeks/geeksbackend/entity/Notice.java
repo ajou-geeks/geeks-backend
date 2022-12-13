@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
+import com.geeks.geeksbackend.enumeration.MessageObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,15 @@ public class Notice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private MessageObject object;
+
+    private String title;
+
     private String content;
+
     @ManyToOne
-    private User from;
-    @ManyToOne
-    private User to;
+    @JoinColumn(name = "user_id")
+    private User user;
 }

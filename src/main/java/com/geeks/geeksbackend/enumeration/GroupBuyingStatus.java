@@ -9,9 +9,9 @@ import java.util.stream.Stream;
 
 @Getter
 @AllArgsConstructor
-public enum CoBuyStatus {
+public enum GroupBuyingStatus {
     OPEN("진행중"),
-    CLOSE("모집완료"),
+    CLOSE("모집마감"),
     EXPIRE("모집만료"),
     SETTLE("정산중"),
     RECEIVE("수령중"),
@@ -24,10 +24,10 @@ public enum CoBuyStatus {
         return title;
     }
 
-    private static final Map<String, CoBuyStatus> BY_TITLE =
-            Stream.of(values()).collect(Collectors.toMap(CoBuyStatus::title, e -> e));
+    private static final Map<String, GroupBuyingStatus> BY_TITLE =
+            Stream.of(values()).collect(Collectors.toMap(GroupBuyingStatus::title, e -> e));
 
-    public static CoBuyStatus valueOfTitle(String title) {
+    public static GroupBuyingStatus valueOfTitle(String title) {
         return BY_TITLE.get(title);
     }
 }

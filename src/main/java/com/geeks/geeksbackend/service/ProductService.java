@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.service;
 
+import com.geeks.geeksbackend.dto.notice.NoticeDto;
 import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.dto.product.ProductListDto;
 import com.geeks.geeksbackend.dto.product.ReceiveProductDto;
@@ -7,8 +8,8 @@ import com.geeks.geeksbackend.dto.product.SettleProductDto;
 import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.ProductUser;
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
-import com.geeks.geeksbackend.enumeration.CoBuyUserType;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingUserType;
 import com.geeks.geeksbackend.enumeration.ProductType;
 import com.geeks.geeksbackend.repository.ProductRepository;
 import com.geeks.geeksbackend.repository.ProductUserRepository;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static com.geeks.geeksbackend.enumeration.MessageTemplate.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ProductUserRepository productUserRepository;
+
+    private final NoticeService noticeService;
 
     public ProductDto createProduct(ProductDto input, Long userId) {
         User user = userRepository.findById(userId)
@@ -49,7 +54,7 @@ public class ProductService {
                 .maxParticipant(input.getMaxParticipant())
                 .destination(input.getDestination())
                 .thumbnailUrl(input.getThumbnailUrl())
-                .status(CoBuyStatus.OPEN)
+                .status(GroupBuyingStatus.OPEN)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -59,7 +64,7 @@ public class ProductService {
         ProductUser productUser = ProductUser.builder()
                 .product(product)
                 .user(user)
-                .type(CoBuyUserType.MANAGER)
+                .type(GroupBuyingUserType.MANAGER)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -103,7 +108,7 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
         if (product.getEndTime().isBefore(LocalDateTime.now())) {
-            product.setStatus(CoBuyStatus.EXPIRE);
+            product.setStatus(GroupBuyingStatus.EXPIRE);
         }
 
         return ProductDto.from(product);
@@ -115,7 +120,7 @@ public class ProductService {
 
         for (Product product : page.getContent()) {
             if (product.getEndTime().isBefore(LocalDateTime.now())) {
-                product.setStatus(CoBuyStatus.EXPIRE);
+                product.setStatus(GroupBuyingStatus.EXPIRE);
             }
             products.add(product);
         }
@@ -138,25 +143,36 @@ public class ProductService {
             throw new RuntimeException("이미 참여한 공동구매입니다.");
         }
 
-        if (product.getStatus() == CoBuyStatus.EXPIRE ||
+        if (product.getStatus() == GroupBuyingStatus.EXPIRE ||
                 product.getEndTime().isBefore(LocalDateTime.now())) {
-            product.setStatus(CoBuyStatus.EXPIRE);
+            product.setStatus(GroupBuyingStatus.EXPIRE); // 동작안함
             throw new RuntimeException("만료된 공동구매입니다.");
         }
 
-        if (product.getStatus() != CoBuyStatus.OPEN) {
+        if (product.getStatus() != GroupBuyingStatus.OPEN) {
             throw new RuntimeException("참여할 수 없는 공동구매입니다.");
         }
 
         ProductUser productUser = ProductUser.builder()
                 .product(product)
                 .user(user)
-                .type(CoBuyUserType.MEMBER)
+                .type(GroupBuyingUserType.MEMBER)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
 
         productUserRepository.save(productUser);
+
+        // 진행자에게 [공동구매 참여] 알림 전송
+        NoticeDto message = NoticeDto.builder()
+                .object("PRODUCT")
+                .title(GROUP_BUYING_JOIN_01.getTitle())
+                .content(GROUP_BUYING_JOIN_01.getContent())
+                .value1(user.getName())
+                .value2(product.getName())
+                .build();
+
+        noticeService.sendNotice(message, product.getUser().getId());
 
         return ProductDto.from(product);
     }
@@ -170,15 +186,36 @@ public class ProductService {
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(product.getId(), user.getId())
                 .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매입니다."));
 
-        if (productUser.getType() == CoBuyUserType.MANAGER) {
+        if (productUser.getType() == GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
         }
 
-        if (product.getStatus() != CoBuyStatus.OPEN) {
+        if (product.getStatus() != GroupBuyingStatus.OPEN) {
             throw new RuntimeException("취소할 수 없는 공동구매입니다.");
         }
 
         productUserRepository.delete(productUser);
+
+        return ProductDto.from(product);
+    }
+
+    public ProductDto closeProduct(Long productId, Long userId) {
+        List<ProductUser> productUsers = productUserRepository.findAllByProductId(productId);
+        Product product = productUsers.get(0).getProduct();
+
+        if (product.getStatus() != GroupBuyingStatus.OPEN) {
+            throw new RuntimeException("마감할 수 없는 공동구매입니다.");
+        }
+
+        int curParticipant = productUsers.size();
+        if (curParticipant < product.getMaxParticipant()) {
+            throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
+        }
+
+        product.setStatus(GroupBuyingStatus.CLOSE);
+
+        // TODO: 공동구매 참여자들에게 마감 알림 전송
+        // ...
 
         return ProductDto.from(product);
     }
@@ -189,11 +226,11 @@ public class ProductService {
 
         Product product = productUser.getProduct();
 
-        if (productUser.getType() != CoBuyUserType.MANAGER) {
+        if (productUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
         }
 
-        if (product.getStatus() != CoBuyStatus.CLOSE) {
+        if (product.getStatus() != GroupBuyingStatus.CLOSE) {
             throw new RuntimeException("정산할 수 없는 공동구매입니다.");
         }
 
@@ -201,7 +238,7 @@ public class ProductService {
         product.setAccountNumber(input.getAccountNumber());
         product.setTotalAmount(input.getTotalAmount());
         product.setAmount(input.getAmount());
-        product.setStatus(CoBuyStatus.SETTLE);
+        product.setStatus(GroupBuyingStatus.SETTLE);
 
         // TODO: 공동구매 참여자들에게 정산 알림 전송
         // ...
@@ -215,17 +252,17 @@ public class ProductService {
 
         Product product = productUser.getProduct();
 
-        if (productUser.getType() != CoBuyUserType.MANAGER) {
+        if (productUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
         }
 
-        if (product.getStatus() != CoBuyStatus.SETTLE) {
+        if (product.getStatus() != GroupBuyingStatus.SETTLE) {
             throw new RuntimeException("수령할 수 없는 공동구매입니다.");
         }
 
         product.setPickupLocation(input.getPickupLocation());
         product.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
-        product.setStatus(CoBuyStatus.RECEIVE);
+        product.setStatus(GroupBuyingStatus.RECEIVE);
 
         // TODO: 공동구매 참여자들에게 수령 알림 전송
         // ...
@@ -239,15 +276,15 @@ public class ProductService {
 
         Product product = productUser.getProduct();
 
-        if (productUser.getType() != CoBuyUserType.MANAGER) {
+        if (productUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
         }
 
-        if (product.getStatus() != CoBuyStatus.RECEIVE) {
+        if (product.getStatus() != GroupBuyingStatus.RECEIVE) {
             throw new RuntimeException("완료할 수 없는 공동구매입니다.");
         }
 
-        product.setStatus(CoBuyStatus.COMPLETE);
+        product.setStatus(GroupBuyingStatus.COMPLETE);
 
         return ProductDto.from(product);
     }

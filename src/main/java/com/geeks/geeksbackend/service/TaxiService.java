@@ -1,11 +1,12 @@
 package com.geeks.geeksbackend.service;
 
+import com.geeks.geeksbackend.dto.notice.NoticeDto;
 import com.geeks.geeksbackend.dto.taxi.ChangeDto;
 import com.geeks.geeksbackend.dto.taxi.CreateDto;
 import com.geeks.geeksbackend.entity.User;
 import com.geeks.geeksbackend.entity.Taxi;
 import com.geeks.geeksbackend.entity.TaxiUser;
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import com.geeks.geeksbackend.repository.UserRepository;
 import com.geeks.geeksbackend.repository.TaxiUserRepository;
 import com.geeks.geeksbackend.repository.TaxiRepository;
@@ -18,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import static com.geeks.geeksbackend.enumeration.MessageTemplate.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class TaxiService {
     private final UserRepository userRepository;
     private final TaxiRepository taxiRepository;
     private final TaxiUserRepository taxiUserRepository;
+
+    private final NoticeService noticeService;
 
     public List<Taxi> getTaxis() {
         return taxiRepository.findAll();
@@ -48,7 +53,7 @@ public class TaxiService {
                 .maxParticipant(createDto.getMaxParticipant())
                 .source(createDto.getSource())
                 .destination(createDto.getDestination())
-                .status(CoBuyStatus.OPEN)
+                .status(GroupBuyingStatus.OPEN)
                 .createdBy(createDto.getUserId())
                 .updatedBy(createDto.getUserId())
                 .build();
@@ -85,7 +90,7 @@ public class TaxiService {
             if (taxi.getUserId() != changeDto.getUserId()) {
                 return false;
             }
-            taxi.setStatus(CoBuyStatus.COMPLETE);
+            taxi.setStatus(GroupBuyingStatus.COMPLETE);;
             taxi.setUpdatedAt(LocalDateTime.now());
             taxiRepository.save(taxi);
             return true;
@@ -110,7 +115,7 @@ public class TaxiService {
                 return 1;
             }
 
-            if (taxi.getStatus() != CoBuyStatus.OPEN) {
+            if (taxi.getStatus() != GroupBuyingStatus.OPEN) {
                 return 2;
             }
 
@@ -128,6 +133,18 @@ public class TaxiService {
                         .build();
 
                 taxiUserRepository.save(newTaxiUser);
+
+                // 진행자에게 [공동구매 참여] 알림 전송
+                NoticeDto message = NoticeDto.builder()
+                        .object("TAXI")
+                        .title(GROUP_BUYING_JOIN_01.getTitle())
+                        .content(GROUP_BUYING_JOIN_01.getContent())
+                        .value1(user.getName())
+                        .value2(taxi.getDestination())
+                        .build();
+
+                noticeService.sendNotice(message, taxi.getUserId());
+
                 return 0;
             }
             return 5;

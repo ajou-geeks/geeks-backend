@@ -1,6 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import com.geeks.geeksbackend.enumeration.DeliveryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,7 +63,7 @@ public class Delivery extends BaseEntity {
     private LocalDateTime pickupDatetime;
 
     @Enumerated(EnumType.STRING)
-    private CoBuyStatus status;
+    private GroupBuyingStatus status;
 
     @OneToOne
     @JoinColumn(name = "user_id")

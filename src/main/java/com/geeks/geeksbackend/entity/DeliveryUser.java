@@ -1,6 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.enumeration.CoBuyUserType;
+import com.geeks.geeksbackend.enumeration.GroupBuyingUserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ public class DeliveryUser extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private CoBuyUserType type;
+    private GroupBuyingUserType type;
 
     private int amount;
 

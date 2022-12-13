@@ -1,9 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.entity.BaseEntity;
-import com.geeks.geeksbackend.entity.Product;
-import com.geeks.geeksbackend.entity.User;
-import com.geeks.geeksbackend.enumeration.CoBuyUserType;
+import com.geeks.geeksbackend.enumeration.GroupBuyingUserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +23,7 @@ public class ProductUser extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private CoBuyUserType type;
+    private GroupBuyingUserType type;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

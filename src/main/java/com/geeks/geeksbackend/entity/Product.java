@@ -1,8 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.entity.BaseEntity;
-import com.geeks.geeksbackend.entity.User;
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import com.geeks.geeksbackend.enumeration.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -69,7 +67,7 @@ public class Product extends BaseEntity {
     private LocalDateTime pickupDatetime;
 
     @Enumerated(EnumType.STRING)
-    private CoBuyStatus status;
+    private GroupBuyingStatus status;
 
     @OneToOne
     @JoinColumn(name = "user_id")

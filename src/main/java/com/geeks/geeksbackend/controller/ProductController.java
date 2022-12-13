@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "product", description = "물품 공동구매 API")
+@Tag(name = "product", description = "생필품 공동구매 API")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/product")
@@ -30,11 +30,11 @@ public class ProductController {
     private final ProductService productService;
     private final UserService userService;
 
-    @Operation(summary = "POST() /product", description = "물품 공동구매 생성 API")
+    @Operation(summary = "POST() /product", description = "생필품 공동구매 생성 API")
     @Parameters({
-            @Parameter(name = "name", description = "물품이름", example = "춘식이 바나나우유 500ML x 3개"),
-            @Parameter(name = "type1", description = "물품타입", example = "음료"),
-            @Parameter(name = "price", description = "물품가격", example = "4950"),
+            @Parameter(name = "name", description = "생필품 이름", example = "춘식이 바나나우유 500ML x 3개"),
+            @Parameter(name = "type1", description = "생필품 타입", example = "음료"),
+            @Parameter(name = "price", description = "생필품 가격", example = "4950"),
             @Parameter(name = "startTime", description = "시작시각", example = "2022-11-26T11:44:30"),
             @Parameter(name = "endTime", description = "종료시각", example = "2022-12-26T00:00:00"),
             @Parameter(name = "maxParticipant", description = "최대 참여인원", example = "3"),
@@ -54,11 +54,11 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "PUT() /product/{id}", description = "물품 공동구매 수정 API")
+    @Operation(summary = "PUT() /product/{id}", description = "생필품 공동구매 수정 API")
     @Parameters({
-            @Parameter(name = "name", description = "물품이름", example = "춘식이 초코우유 500ML x 3개"),
-            @Parameter(name = "type1", description = "물품타입", example = "음료"),
-            @Parameter(name = "price", description = "물품가격", example = "4500"),
+            @Parameter(name = "name", description = "생필품 이름", example = "춘식이 초코우유 500ML x 3개"),
+            @Parameter(name = "type1", description = "생필품 타입", example = "음료"),
+            @Parameter(name = "price", description = "생필품 가격", example = "4500"),
             @Parameter(name = "startTime", description = "시작시각", example = "2022-11-26T12:00:00"),
             @Parameter(name = "endTime", description = "종료시각", example = "2022-12-26T00:00:00"),
             @Parameter(name = "maxParticipant", description = "최대 참여인원", example = "3"),
@@ -78,7 +78,7 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "DELETE() /product/{id}", description = "물품 공동구매 삭제 API")
+    @Operation(summary = "DELETE() /product/{id}", description = "생필품 공동구매 삭제 API")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "NO CONTENT"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -91,7 +91,7 @@ public class ProductController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(summary = "GET() /product/{id}", description = "물품 공동구매 조회 API")
+    @Operation(summary = "GET() /product/{id}", description = "생필품 공동구매 조회 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -104,7 +104,7 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "GET() /product/list?page={}&size={}&sort={}&query={}", description = "물품 공동구매 목록 조회 API")
+    @Operation(summary = "GET() /product/list?page={}&size={}&sort={}&query={}", description = "생필품 공동구매 목록 조회 API")
     @Parameters({
             @Parameter(name = "page", description = "검색할 페이지 (기본 0, 최대 1000)", example = "0"),
             @Parameter(name = "size", description = "한번에 검색할 원소 갯수 (기본 10, 최대 100)", example = "10"),
@@ -124,9 +124,9 @@ public class ProductController {
         return new ResponseEntity<>(productListDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "POST() /product/join", description = "물품 공동구매 참여 API")
+    @Operation(summary = "POST() /product/join", description = "생필품 공동구매 참여 API")
     @Parameters({
-            @Parameter(name = "id", description = "물품ID", example = "1")
+            @Parameter(name = "id", description = "생필품 ID", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
@@ -141,9 +141,9 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "POST() /product/cancel", description = "물품 공동구매 참여 취소 API")
+    @Operation(summary = "POST() /product/cancel", description = "생필품 공동구매 참여 취소 API")
     @Parameters({
-            @Parameter(name = "id", description = "물품ID", example = "1")
+            @Parameter(name = "id", description = "생필품 ID", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
@@ -158,9 +158,26 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "POST() /product/settle", description = "물품 공동구매 정산 API")
+    @Operation(summary = "POST() /product/close", description = "생필품 공동구매 마감 API")
     @Parameters({
-            @Parameter(name = "id", description = "물품ID", example = "1"),
+            @Parameter(name = "id", description = "생필품 ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/close")
+    public ResponseEntity<ProductDto> closeProduct(@RequestBody ProductIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.closeProduct(input.getId(), userId);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "POST() /product/settle", description = "생필품 공동구매 정산 API")
+    @Parameters({
+            @Parameter(name = "id", description = "생필품 ID", example = "1"),
             @Parameter(name = "bankName", description = "은행이름", example = "카카오뱅크"),
             @Parameter(name = "accountNumber", description = "계좌번호", example = "1111-11-1111111"),
             @Parameter(name = "totalAmount", description = "총 결제금액", example = "20000"),
@@ -179,9 +196,9 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "POST() /product/receive", description = "물품 공동구매 수령 API")
+    @Operation(summary = "POST() /product/receive", description = "생필품 공동구매 수령 API")
     @Parameters({
-            @Parameter(name = "id", description = "물품ID", example = "1"),
+            @Parameter(name = "id", description = "생필품 ID", example = "1"),
             @Parameter(name = "pickupLocation", description = "수령장소", example = "일신관 로비"),
             @Parameter(name = "pickupDatetime", description = "수령일자", example = "2022-11-27T18:00:00")
     })
@@ -198,9 +215,9 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "POST() /product/confirm", description = "물품 공동구매 완료 API")
+    @Operation(summary = "POST() /product/confirm", description = "생필품 공동구매 완료 API")
     @Parameters({
-            @Parameter(name = "id", description = "물품ID", example = "1")
+            @Parameter(name = "id", description = "생필품 ID", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),

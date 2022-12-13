@@ -1,6 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
-import com.geeks.geeksbackend.enumeration.CoBuyStatus;
+import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,5 +33,5 @@ public class Taxi extends BaseEntity {
     private int maxParticipant;             // 최대 인원
     private String source;                  // 출발지
     private String destination;             // 도착지
-    private CoBuyStatus status;             // 공동구매 상태
+    private GroupBuyingStatus status;       // 공동구매 상태
 }

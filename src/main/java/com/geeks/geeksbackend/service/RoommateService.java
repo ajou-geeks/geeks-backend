@@ -87,9 +87,12 @@ public class RoommateService {
         List<UserInfoDto> toBeSortedTargetUsers = new ArrayList<>();
 
         for (User targetUser : targetUsers) {
-            List<UserCharacter> targetUserCharacters = userCharacterRepository.findAllById(targetUser.getId());
+            if (targetUser.getPattern() == null) continue;
+
             int score = SCORE_WITH_MATCHING_DORMITORY;
-            score += targetUser.getPattern() == sourceUser.getPattern() ? SCORE_WITH_MATCHING_PATTERN : 0;
+            score += (targetUser.getPattern() == sourceUser.getPattern()) ? SCORE_WITH_MATCHING_PATTERN : 0;
+
+            List<UserCharacter> targetUserCharacters = userCharacterRepository.findAllById(targetUser.getId());
 
             if (!targetUserCharacters.isEmpty()) {
                 Set<CharacterType> commonCharacters = new HashSet<>(sourceCharacterTypes);
