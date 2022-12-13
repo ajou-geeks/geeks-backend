@@ -47,7 +47,7 @@ public class NoteController {
         return new ResponseEntity<>(noteListDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "GET() /note/list?id={}", description = "쪽지 목록 조회 API")
+    @Operation(summary = "GET() /note?id={}", description = "쪽지 조회 API")
     @Parameters({
             @Parameter(name = "id", description = "대화방 ID", example = "1")
     })
@@ -57,14 +57,14 @@ public class NoteController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @GetMapping("/list")
+    @GetMapping("")
     public ResponseEntity<NoteListDto> getNoteList(@RequestParam("id") Long roomId) {
         Long userId = userService.getMyUserWithAuthorities().getId();
         NoteListDto noteListDto = noteService.getNoteList(roomId, userId);
         return new ResponseEntity<>(noteListDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "GET() /note/room", description = "대화방 목록 조회 API")
+    @Operation(summary = "GET() /note/room", description = "대화방 조회 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RoomListDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
