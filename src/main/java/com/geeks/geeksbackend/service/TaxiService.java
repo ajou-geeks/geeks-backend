@@ -44,9 +44,9 @@ public class TaxiService {
         return taxiUserRepository.findByTaxiId(id);
     }
 
-    public void createTaxi(CreateDto createDto) {
+    public void createTaxi(CreateDto createDto, Long userId) {
         Taxi taxi = Taxi.builder()
-                .userId(createDto.getUserId())
+                .userId(userId)
                 .price(createDto.getPrice())
                 .startTime(LocalDateTime.parse(createDto.getStartTime(), DateTimeFormatter.ISO_DATE_TIME))
                 .endTime(LocalDateTime.parse(createDto.getEndTime(), DateTimeFormatter.ISO_DATE_TIME))
@@ -54,12 +54,12 @@ public class TaxiService {
                 .source(createDto.getSource())
                 .destination(createDto.getDestination())
                 .status(GroupBuyingStatus.OPEN)
-                .createdBy(createDto.getUserId())
-                .updatedBy(createDto.getUserId())
+                .createdBy(userId)
+                .updatedBy(userId)
                 .build();
 
         Taxi newTaxi = taxiRepository.save(taxi);
-        User user = userRepository.findById(createDto.getUserId());
+        User user = userRepository.findById(userId).get();
 
         TaxiUser taxiUser = TaxiUser.builder()
                 .taxiId(newTaxi.getId())

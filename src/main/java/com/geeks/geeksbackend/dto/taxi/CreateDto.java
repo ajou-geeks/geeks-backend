@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateDto {
-    private long userId;
     private int price;
     private String startTime;
     private String endTime;
