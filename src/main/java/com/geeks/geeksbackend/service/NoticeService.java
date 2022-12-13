@@ -29,8 +29,6 @@ public class NoticeService {
                 .object(MessageObject.valueOf(message.getObject()))
                 .title(String.format(message.getTitle()))
                 .content(String.format(message.getContent(), message.getValue1(), message.getValue2()))
-                .value1(message.getValue1())
-                .value2(message.getValue2())
 //                .createdBy(0L)
 //                .updatedBy(0L)
                 .build();

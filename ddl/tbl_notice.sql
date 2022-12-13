@@ -10,8 +10,6 @@ create table tbl_notice
     object          varchar(50)                                 not null,
     title           varchar(100)                                not null,
     content         varchar(100)                                    null,
-    value1          varchar(100)                                    null,
-    value2          varchar(100)                                    null,
 
     -- common columns
     created_by      bigint unsigned                                 null,
