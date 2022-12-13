@@ -126,7 +126,7 @@ public class DeliveryController {
 
     @Operation(summary = "POST() /delivery/join", description = "배달음식 공동구매 참여 API")
     @Parameters({
-            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "id", description = "배달음식 ID", example = "1"),
             @Parameter(name = "amount", description = "주문금액", example = "7000"),
             @Parameter(name = "description", description = "주문상세", example = "떡볶이 1개, 참치마요김밥 1개")
     })
@@ -145,7 +145,7 @@ public class DeliveryController {
 
     @Operation(summary = "POST() /delivery/cancel", description = "배달음식 공동구매 참여 취소 API")
     @Parameters({
-            @Parameter(name = "id", description = "배달음식ID", example = "1")
+            @Parameter(name = "id", description = "배달음식 ID", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
@@ -160,9 +160,26 @@ public class DeliveryController {
         return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "POST() /delivery/close", description = "배달음식 공동구매 마감 API")
+    @Parameters({
+            @Parameter(name = "id", description = "배달음식 ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/close")
+    public ResponseEntity<DeliveryDto> closeDelivery(@RequestBody DeliveryIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        DeliveryDto deliveryDto = deliveryService.closeDelivery(input.getId(), userId);
+        return new ResponseEntity<>(deliveryDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "POST() /delivery/settle", description = "배달음식 공동구매 정산 API")
     @Parameters({
-            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "id", description = "배달음식 ID", example = "1"),
             @Parameter(name = "bankName", description = "은행이름", example = "카카오뱅크"),
             @Parameter(name = "accountNumber", description = "계좌번호", example = "1111-11-1111111"),
             @Parameter(name = "totalAmount", description = "총 결제금액", example = "20000")
@@ -182,7 +199,7 @@ public class DeliveryController {
 
     @Operation(summary = "POST() /delivery/receive", description = "배달음식 공동구매 수령 API")
     @Parameters({
-            @Parameter(name = "id", description = "배달음식ID", example = "1"),
+            @Parameter(name = "id", description = "배달음식 ID", example = "1"),
             @Parameter(name = "pickupLocation", description = "수령장소", example = "일신관 로비"),
             @Parameter(name = "pickupDatetime", description = "수령일자", example = "2022-11-27T18:00:00")
     })
@@ -201,7 +218,7 @@ public class DeliveryController {
 
     @Operation(summary = "POST() /delivery/confirm", description = "배달음식 공동구매 완료 API")
     @Parameters({
-            @Parameter(name = "id", description = "생필품 ID", example = "1")
+            @Parameter(name = "id", description = "배달음식 ID", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryDto.class))),

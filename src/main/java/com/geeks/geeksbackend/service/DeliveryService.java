@@ -141,7 +141,7 @@ public class DeliveryService {
 
         if (delivery.getStatus() == GroupBuyingStatus.EXPIRE ||
                 delivery.getEndTime().isBefore(LocalDateTime.now())) {
-            delivery.setStatus(GroupBuyingStatus.EXPIRE);
+            delivery.setStatus(GroupBuyingStatus.EXPIRE); // 동작안함
             throw new RuntimeException("만료된 공동구매입니다.");
         }
 
@@ -193,6 +193,27 @@ public class DeliveryService {
         }
 
         deliveryUserRepository.delete(deliveryUser);
+
+        return DeliveryDto.from(delivery);
+    }
+
+    public DeliveryDto closeDelivery(Long deliveryId, Long userId) {
+        List<DeliveryUser> deliveryUsers = deliveryUserRepository.findAllByDeliveryId(deliveryId);
+        Delivery delivery = deliveryUsers.get(0).getDelivery();
+
+        if (delivery.getStatus() != GroupBuyingStatus.OPEN) {
+            throw new RuntimeException("마감할 수 없는 공동구매입니다.");
+        }
+
+        int curAmount = deliveryUsers.stream().mapToInt(DeliveryUser::getAmount).sum();
+        if (curAmount < delivery.getMinAmount()) {
+            throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
+        }
+
+        delivery.setStatus(GroupBuyingStatus.CLOSE);
+
+        // TODO: 공동구매 참여자들에게 마감 알림 전송
+        // ...
 
         return DeliveryDto.from(delivery);
     }
