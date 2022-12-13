@@ -1,7 +1,10 @@
 package com.geeks.geeksbackend.dto.notice;
 
 import com.geeks.geeksbackend.entity.Notice;
+import com.geeks.geeksbackend.enumeration.MessageObject;
 import lombok.*;
+
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -19,6 +22,14 @@ public class NoticeDto {
     private String createdAt;
 
     public static NoticeDto from(Notice notice) {
-        return null;
+        if (notice == null) return null;
+
+        return NoticeDto.builder()
+                .id(notice.getId())
+                .object(notice.getObject().getTitle())
+                .title(notice.getTitle())
+                .content(notice.getContent())
+                .createdAt(notice.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .build();
     }
 }
