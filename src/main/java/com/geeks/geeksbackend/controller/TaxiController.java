@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "taxi", description = "공동구매 택시 API")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/taxi")
 @RequiredArgsConstructor
@@ -62,7 +64,6 @@ public class TaxiController {
 
     @Operation(summary = "POST() /taxi", description = "택시 공동구매 생성 API")
     @Parameters({
-            @Parameter(name = "userId", description = "공동구매 생성한 유저 아이디", example = "1"),
             @Parameter(name = "price", description = "예상 가격", example = "4950"),
             @Parameter(name = "startTime", description = "시작시각", example = "2022-11-26T11:44:30"),
             @Parameter(name = "endTime", description = "종료시각", example = "2022-12-26T00:00:00"),
@@ -77,7 +78,8 @@ public class TaxiController {
     @PostMapping("")
     public ResponseEntity<?> createTaxi(@RequestBody CreateDto createDto) {
         try {
-            taxiService.createTaxi(createDto);
+            Long userId = userService.getMyUserWithAuthorities().getId();
+            taxiService.createTaxi(createDto, userId);
             return ResponseEntity.ok().body(createDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("택시 공동구매 생성 실패");
