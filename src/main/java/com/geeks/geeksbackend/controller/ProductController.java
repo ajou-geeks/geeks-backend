@@ -158,6 +158,23 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "POST() /product/close", description = "생필품 공동구매 마감 API")
+    @Parameters({
+            @Parameter(name = "id", description = "생필품 ID", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @PostMapping("/close")
+    public ResponseEntity<ProductDto> closeProduct(@RequestBody ProductIdDto input) {
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        ProductDto productDto = productService.closeProduct(input.getId(), userId);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "POST() /product/settle", description = "생필품 공동구매 정산 API")
     @Parameters({
             @Parameter(name = "id", description = "생필품 ID", example = "1"),

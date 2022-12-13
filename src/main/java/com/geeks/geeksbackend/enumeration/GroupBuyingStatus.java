@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public enum GroupBuyingStatus {
     OPEN("진행중"),
-    CLOSE("모집완료"),
-    EXPIRE("모집마감"),
+    CLOSE("모집마감"),
+    EXPIRE("모집만료"),
     SETTLE("정산중"),
     RECEIVE("수령중"),
     COMPLETE("완료"),

@@ -145,7 +145,7 @@ public class ProductService {
 
         if (product.getStatus() == GroupBuyingStatus.EXPIRE ||
                 product.getEndTime().isBefore(LocalDateTime.now())) {
-            product.setStatus(GroupBuyingStatus.EXPIRE);
+            product.setStatus(GroupBuyingStatus.EXPIRE); // 동작안함
             throw new RuntimeException("만료된 공동구매입니다.");
         }
 
@@ -195,6 +195,27 @@ public class ProductService {
         }
 
         productUserRepository.delete(productUser);
+
+        return ProductDto.from(product);
+    }
+
+    public ProductDto closeProduct(Long productId, Long userId) {
+        List<ProductUser> productUsers = productUserRepository.findAllByProductId(productId);
+        Product product = productUsers.get(0).getProduct();
+
+        if (product.getStatus() != GroupBuyingStatus.OPEN) {
+            throw new RuntimeException("마감할 수 없는 공동구매입니다.");
+        }
+
+        int curParticipant = productUsers.size();
+        if (curParticipant < product.getMaxParticipant()) {
+            throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
+        }
+
+        product.setStatus(GroupBuyingStatus.CLOSE);
+
+        // TODO: 공동구매 참여자들에게 마감 알림 전송
+        // ...
 
         return ProductDto.from(product);
     }
