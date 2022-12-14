@@ -159,8 +159,6 @@ public class ProductService {
 
         if (product.getStatus() != GroupBuyingStatus.OPEN) throw new RuntimeException("마감할 수 없는 공동구매입니다.");
 
-        if (productUsers.size() < product.getMaxParticipant()) throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
-
         product.setStatus(GroupBuyingStatus.CLOSE);
 
         // 진행자에게 [공동구매 마감] 알림 전송
