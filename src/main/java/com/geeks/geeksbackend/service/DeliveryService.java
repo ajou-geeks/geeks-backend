@@ -205,10 +205,10 @@ public class DeliveryService {
             throw new RuntimeException("마감할 수 없는 공동구매입니다.");
         }
 
-        int curAmount = deliveryUsers.stream().mapToInt(DeliveryUser::getAmount).sum();
-        if (curAmount < delivery.getMinAmount()) {
-            throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
-        }
+//        int curAmount = deliveryUsers.stream().mapToInt(DeliveryUser::getAmount).sum();
+//        if (curAmount < delivery.getMinAmount()) {
+//            throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
+//        }
 
         delivery.setStatus(GroupBuyingStatus.CLOSE);
 
