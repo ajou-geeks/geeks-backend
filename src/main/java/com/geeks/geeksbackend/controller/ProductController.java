@@ -87,7 +87,8 @@ public class ProductController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity deleteProduct(@PathVariable("id") Long id) {
-        productService.deleteProduct(id);
+        Long userId = userService.getMyUserWithAuthorities().getId();
+        productService.deleteProduct(id, userId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

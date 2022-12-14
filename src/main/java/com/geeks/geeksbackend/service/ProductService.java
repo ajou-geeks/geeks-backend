@@ -79,6 +79,11 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
+        // 권한 확인
+        if (product.getCreatedBy() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+
         // TODO: 공동구매에 이미 참여한 사용자가 있으면 수정 불가
         // ...
 
@@ -96,9 +101,14 @@ public class ProductService {
         return ProductDto.from(product);
     }
 
-    public void deleteProduct(Long id) {
+    public void deleteProduct(Long id, Long userId) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
+
+        // 권한 확인
+        if (product.getCreatedBy() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
 
         productRepository.delete(product);
     }
@@ -203,6 +213,11 @@ public class ProductService {
         List<ProductUser> productUsers = productUserRepository.findAllByProductId(productId);
         Product product = productUsers.get(0).getProduct();
 
+        // 권한 확인
+        if (product.getCreatedBy() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+
         if (product.getStatus() != GroupBuyingStatus.OPEN) {
             throw new RuntimeException("마감할 수 없는 공동구매입니다.");
         }
@@ -225,6 +240,11 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException());
 
         Product product = productUser.getProduct();
+
+        // 권한 확인
+        if (product.getCreatedBy() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
 
         if (productUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
@@ -252,6 +272,11 @@ public class ProductService {
 
         Product product = productUser.getProduct();
 
+        // 권한 확인
+        if (product.getCreatedBy() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+
         if (productUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
         }
@@ -275,6 +300,11 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException());
 
         Product product = productUser.getProduct();
+
+        // 권한 확인
+        if (product.getCreatedBy() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
 
         if (productUser.getType() != GroupBuyingUserType.MANAGER) {
             throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
