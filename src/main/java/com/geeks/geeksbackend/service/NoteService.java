@@ -57,7 +57,7 @@ public class NoteService {
 
         noteRepository.save(note);
 
-        List<Note> notes = noteRepository.findAllByRoomIdOrderByIdDesc(room.getId());
+        List<Note> notes = noteRepository.findAllByRoomIdOrderByIdAsc(room.getId());
 
         return NoteListDto.builder()
                 .totalCount((long) notes.size())
@@ -71,7 +71,7 @@ public class NoteService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 대화방입니다."));
 
-        List<Note> notes = noteRepository.findAllByRoomIdOrderByIdDesc(room.getId());
+        List<Note> notes = noteRepository.findAllByRoomIdOrderByIdAsc(room.getId());
 
         return NoteListDto.builder()
                 .totalCount((long) notes.size())
