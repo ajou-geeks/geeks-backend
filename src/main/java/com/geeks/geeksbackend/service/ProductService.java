@@ -44,34 +44,13 @@ public class ProductService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
-        Product product = Product.builder()
-                .user(user)
-                .name(input.getName())
-                .type1(ProductType.valueOfTitle(input.getType1()))
-                .price(input.getPrice())
-                .startTime(LocalDateTime.parse(input.getStartTime(), DateTimeFormatter.ISO_DATE_TIME))
-                .endTime(LocalDateTime.parse(input.getEndTime(), DateTimeFormatter.ISO_DATE_TIME))
-                .maxParticipant(input.getMaxParticipant())
-                .destination(input.getDestination())
-                .thumbnailUrl(input.getThumbnailUrl())
-                .status(GroupBuyingStatus.OPEN)
-                .createdBy(userId)
-                .updatedBy(userId)
-                .build();
-
+        Product product = Product.createProduct(user, input);
         productRepository.save(product);
 
-        ProductUser productUser = ProductUser.builder()
-                .product(product)
-                .user(user)
-                .type(GroupBuyingUserType.MANAGER)
-                .createdBy(userId)
-                .updatedBy(userId)
-                .build();
-
+        ProductUser productUser = ProductUser.createProductUser(product, user, GroupBuyingUserType.MANAGER);
         productUserRepository.save(productUser);
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     @Transactional
@@ -98,7 +77,7 @@ public class ProductService {
         product.setThumbnailUrl(input.getThumbnailUrl());
         product.setUpdatedBy(userId);
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public void deleteProduct(Long id, Long userId) {
@@ -121,7 +100,7 @@ public class ProductService {
             product.setStatus(GroupBuyingStatus.EXPIRE);
         }
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public ProductListDto getProductList(String query, Pageable pageable) {
@@ -138,7 +117,7 @@ public class ProductService {
         return ProductListDto.builder()
                 .totalCount(page.getTotalElements())
                 .elements(products.stream()
-                        .map(ProductDto::from)
+                        .map(p -> getProductDto(p))
                         .collect(Collectors.toList()))
                 .build();
     }
@@ -184,7 +163,7 @@ public class ProductService {
 
         noticeService.sendNotice(message, product.getUser().getId());
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public ProductDto cancelProduct(Long productId, Long userId) {
@@ -206,7 +185,7 @@ public class ProductService {
 
         productUserRepository.delete(productUser);
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public ProductDto closeProduct(Long productId, Long userId) {
@@ -232,13 +211,12 @@ public class ProductService {
         // TODO: 공동구매 참여자들에게 마감 알림 전송
         // ...
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public ProductDto settleProduct(SettleProductDto input, Long userId) {
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
                 .orElseThrow(() -> new NoSuchElementException());
-
         Product product = productUser.getProduct();
 
         // 권한 확인
@@ -263,13 +241,12 @@ public class ProductService {
         // TODO: 공동구매 참여자들에게 정산 알림 전송
         // ...
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public ProductDto receiveProduct(ReceiveProductDto input, Long userId) {
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
                 .orElseThrow(() -> new NoSuchElementException());
-
         Product product = productUser.getProduct();
 
         // 권한 확인
@@ -292,13 +269,12 @@ public class ProductService {
         // TODO: 공동구매 참여자들에게 수령 알림 전송
         // ...
 
-        return ProductDto.from(product);
+        return getProductDto(product);
     }
 
     public ProductDto confirmProduct(Long productId, Long userId) {
         ProductUser productUser = productUserRepository.findByProductIdAndUserId(productId, userId)
                 .orElseThrow(() -> new NoSuchElementException());
-
         Product product = productUser.getProduct();
 
         // 권한 확인
@@ -316,6 +292,13 @@ public class ProductService {
 
         product.setStatus(GroupBuyingStatus.COMPLETE);
 
-        return ProductDto.from(product);
+        return getProductDto(product);
+    }
+
+    private ProductDto getProductDto(Product product) {
+        ProductDto productDto = ProductDto.from(product);
+        productDto.setCurParticipant(productUserRepository.countAllByProductId(product.getId()));
+
+        return productDto;
     }
 }

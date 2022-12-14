@@ -1,5 +1,6 @@
 package com.geeks.geeksbackend.entity;
 
+import com.geeks.geeksbackend.dto.product.ProductDto;
 import com.geeks.geeksbackend.enumeration.GroupBuyingStatus;
 import com.geeks.geeksbackend.enumeration.ProductType;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,9 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 @Entity
 @Table(name = "tbl_product")
@@ -72,4 +76,21 @@ public class Product extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public static Product createProduct(User user, ProductDto input) {
+        return Product.builder()
+                .user(user)
+                .name(input.getName())
+                .type1(ProductType.valueOfTitle(input.getType1()))
+                .price(input.getPrice())
+                .startTime(LocalDateTime.parse(input.getStartTime(), ISO_DATE_TIME))
+                .endTime(LocalDateTime.parse(input.getEndTime(), ISO_DATE_TIME))
+                .maxParticipant(input.getMaxParticipant())
+                .destination(input.getDestination())
+                .thumbnailUrl(input.getThumbnailUrl())
+                .status(GroupBuyingStatus.OPEN)
+                .createdBy(user.getId())
+                .updatedBy(user.getId())
+                .build();
+    }
 }

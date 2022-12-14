@@ -4,7 +4,7 @@ import com.geeks.geeksbackend.entity.Product;
 import com.geeks.geeksbackend.entity.User;
 import lombok.*;
 
-import java.time.format.DateTimeFormatter;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 @Getter
 @Setter
@@ -20,6 +20,7 @@ public class ProductDto {
     private String startTime;
     private String endTime;
     private int maxParticipant;
+    private int curParticipant;
     private String destination;
     private String thumbnailUrl;
     private String status;
@@ -33,8 +34,8 @@ public class ProductDto {
                 .name(product.getName())
                 .type1(product.getType1().title())
                 .price(product.getPrice())
-                .startTime(product.getStartTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .endTime(product.getEndTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .startTime(product.getStartTime().format(ISO_LOCAL_DATE_TIME))
+                .endTime(product.getEndTime().format(ISO_LOCAL_DATE_TIME))
                 .maxParticipant(product.getMaxParticipant())
                 .destination(product.getDestination())
                 .thumbnailUrl(product.getThumbnailUrl())

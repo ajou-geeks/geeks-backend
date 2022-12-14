@@ -13,4 +13,5 @@ public interface ProductUserRepository extends JpaRepository<ProductUser, Long> 
     boolean existsByProductAndUser(Product product, User user);
     Optional<ProductUser> findByProductIdAndUserId(Long productId, Long userId);
     List<ProductUser> findAllByProductId(Long productId);
+    int countAllByProductId(Long productId);
 }
