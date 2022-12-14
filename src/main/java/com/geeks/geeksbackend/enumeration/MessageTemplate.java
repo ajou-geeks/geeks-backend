@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum MessageTemplate {
 
     GROUP_BUYING_JOIN_01("공동구매에 참여했어요.", "[%s]님이 [%s]에 참여했어요."),
+    TAXI_JOIN_01("택시에 탑승하세요.", "[%s]행 택시 탑승을 위해 %s에 %s에서 만나요!"),
 
     GROUP_BUYING_CLOSE_01("공동구매가 마감되었어요.", "[%s]의 구매를 진행하고 정산을 요청해주세요."),
     GROUP_BUYING_CLOSE_02("공동구매가 마감되었어요.", "[%s]의 구매가 진행되고 있으니 조금만 기다려주세요."),

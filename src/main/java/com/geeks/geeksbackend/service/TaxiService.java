@@ -135,7 +135,7 @@ public class TaxiService {
                 taxiUserRepository.save(newTaxiUser);
 
                 // 진행자에게 [공동구매 참여] 알림 전송
-                NoticeDto message = NoticeDto.builder()
+                NoticeDto message1 = NoticeDto.builder()
                         .object("TAXI")
                         .title(GROUP_BUYING_JOIN_01.getTitle())
                         .content(GROUP_BUYING_JOIN_01.getContent())
@@ -143,7 +143,19 @@ public class TaxiService {
                         .value2(taxi.getDestination())
                         .build();
 
-                noticeService.sendNotice(message, taxi.getUserId());
+                noticeService.sendNotice(message1, taxi.getUserId());
+
+                // 참여자에게 [택시 탑승위치] 알림 전송
+                NoticeDto message2 = NoticeDto.builder()
+                        .object("TAXI")
+                        .title(TAXI_JOIN_01.getTitle())
+                        .content(TAXI_JOIN_01.getContent())
+                        .value1(taxi.getDestination())
+                        .value2(taxi.getEndTime().format(DateTimeFormatter.ofPattern("Y년 MM월 dd일 HH시 mm분")))
+                        .value3(taxi.getSource())
+                        .build();
+
+                noticeService.sendNotice(message2, user.getId());
 
                 return 0;
             }
