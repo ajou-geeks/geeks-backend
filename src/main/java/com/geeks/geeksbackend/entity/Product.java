@@ -77,7 +77,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static Product createProduct(User user, ProductDto input) {
+    public static Product createProduct(ProductDto input, User user) {
         return Product.builder()
                 .user(user)
                 .name(input.getName())
@@ -92,5 +92,17 @@ public class Product extends BaseEntity {
                 .createdBy(user.getId())
                 .updatedBy(user.getId())
                 .build();
+    }
+
+    public static void updateProduct(Product product, ProductDto input) {
+        product.setName(input.getName());
+        product.setType1(ProductType.valueOfTitle(input.getType1()));
+        product.setPrice(input.getPrice());
+        product.setStartTime(LocalDateTime.parse(input.getStartTime(), ISO_DATE_TIME));
+        product.setEndTime(LocalDateTime.parse(input.getEndTime(), ISO_DATE_TIME));
+        product.setMaxParticipant(input.getMaxParticipant());
+        product.setDestination(input.getDestination());
+        product.setThumbnailUrl(input.getThumbnailUrl());
+        product.setUpdatedBy(product.getUser().getId());
     }
 }

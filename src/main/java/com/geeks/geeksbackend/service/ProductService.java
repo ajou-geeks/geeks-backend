@@ -28,6 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static com.geeks.geeksbackend.enumeration.MessageTemplate.*;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 @Service
 @Transactional
@@ -44,11 +45,11 @@ public class ProductService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
-        Product product = Product.createProduct(user, input);
+        Product product = Product.createProduct(input, user);
         productRepository.save(product);
 
-        ProductUser productUser = ProductUser.createProductUser(product, user, GroupBuyingUserType.MANAGER);
-        productUserRepository.save(productUser);
+        ProductUser manager = ProductUser.createProductUser(product, user, GroupBuyingUserType.MANAGER);
+        productUserRepository.save(manager);
 
         return getProductDto(product);
     }
@@ -58,24 +59,9 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
-        // 권한 확인
-        if (product.getCreatedBy() != userId) {
-            throw new RuntimeException("권한이 없습니다.");
-        }
+        if (product.getCreatedBy() != userId) throw new RuntimeException("권한이 없습니다.");
 
-        // TODO: 공동구매에 이미 참여한 사용자가 있으면 수정 불가
-        // ...
-
-        // JPA 변경감지 사용
-        product.setName(input.getName());
-        product.setType1(ProductType.valueOfTitle(input.getType1()));
-        product.setPrice(input.getPrice());
-        product.setStartTime(LocalDateTime.parse(input.getStartTime(), DateTimeFormatter.ISO_DATE_TIME));
-        product.setEndTime(LocalDateTime.parse(input.getEndTime(), DateTimeFormatter.ISO_DATE_TIME));
-        product.setMaxParticipant(input.getMaxParticipant());
-        product.setDestination(input.getDestination());
-        product.setThumbnailUrl(input.getThumbnailUrl());
-        product.setUpdatedBy(userId);
+        Product.updateProduct(product, input);
 
         return getProductDto(product);
     }
@@ -84,10 +70,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
-        // 권한 확인
-        if (product.getCreatedBy() != userId) {
-            throw new RuntimeException("권한이 없습니다.");
-        }
+        if (product.getCreatedBy() != userId) throw new RuntimeException("권한이 없습니다.");
 
         productRepository.delete(product);
     }
@@ -96,9 +79,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
 
-        if (product.getEndTime().isBefore(LocalDateTime.now())) {
-            product.setStatus(GroupBuyingStatus.EXPIRE);
-        }
+        if (product.getEndTime().isBefore(LocalDateTime.now())) product.setStatus(GroupBuyingStatus.EXPIRE);
 
         return getProductDto(product);
     }
@@ -108,9 +89,7 @@ public class ProductService {
         List<Product> products = new ArrayList<>();
 
         for (Product product : page.getContent()) {
-            if (product.getEndTime().isBefore(LocalDateTime.now())) {
-                product.setStatus(GroupBuyingStatus.EXPIRE);
-            }
+            if (product.getEndTime().isBefore(LocalDateTime.now())) product.setStatus(GroupBuyingStatus.EXPIRE);
             products.add(product);
         }
 
@@ -125,32 +104,21 @@ public class ProductService {
     public ProductDto joinProduct(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
-        if (productUserRepository.existsByProductAndUser(product, user)) {
-            throw new RuntimeException("이미 참여한 공동구매입니다.");
-        }
+        if (productUserRepository.existsByProductAndUser(product, user)) throw new RuntimeException("이미 참여한 공동구매입니다.");
 
-        if (product.getStatus() == GroupBuyingStatus.EXPIRE ||
-                product.getEndTime().isBefore(LocalDateTime.now())) {
-            product.setStatus(GroupBuyingStatus.EXPIRE); // 동작안함
+        if (product.getStatus() == GroupBuyingStatus.EXPIRE || product.getEndTime().isBefore(LocalDateTime.now())) {
+//            product.setStatus(GroupBuyingStatus.EXPIRE);
             throw new RuntimeException("만료된 공동구매입니다.");
         }
 
-        if (product.getStatus() != GroupBuyingStatus.OPEN) {
-            throw new RuntimeException("참여할 수 없는 공동구매입니다.");
-        }
+        if (product.getStatus() != GroupBuyingStatus.OPEN) throw new RuntimeException("참여할 수 없는 공동구매입니다.");
 
-        ProductUser productUser = ProductUser.builder()
-                .product(product)
-                .user(user)
-                .type(GroupBuyingUserType.MEMBER)
-                .createdBy(userId)
-                .updatedBy(userId)
-                .build();
-
-        productUserRepository.save(productUser);
+        ProductUser member = ProductUser.createProductUser(product, user, GroupBuyingUserType.MEMBER);
+        productUserRepository.save(member);
 
         // 진행자에게 [공동구매 참여] 알림 전송
         NoticeDto message = NoticeDto.builder()
@@ -169,21 +137,16 @@ public class ProductService {
     public ProductDto cancelProduct(Long productId, Long userId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 공동구매입니다."));
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 
-        ProductUser productUser = productUserRepository.findByProductIdAndUserId(product.getId(), user.getId())
-                .orElseThrow(() -> new NoSuchElementException("참여하지 않은 공동구매입니다."));
+        ProductUser member = productUserRepository.findByProductIdAndUserIdAndType(product.getId(), user.getId(), GroupBuyingUserType.MEMBER)
+                .orElseThrow(() -> new NoSuchElementException("취소할 수 없는 공동구매입니다."));
 
-        if (productUser.getType() == GroupBuyingUserType.MANAGER) {
-            throw new RuntimeException("공동구매 진행자는 취소할 수 없습니다.");
-        }
+        if (product.getStatus() != GroupBuyingStatus.OPEN) throw new RuntimeException("취소할 수 없는 공동구매입니다.");
 
-        if (product.getStatus() != GroupBuyingStatus.OPEN) {
-            throw new RuntimeException("취소할 수 없는 공동구매입니다.");
-        }
-
-        productUserRepository.delete(productUser);
+        productUserRepository.delete(member);
 
         return getProductDto(product);
     }
@@ -192,45 +155,47 @@ public class ProductService {
         List<ProductUser> productUsers = productUserRepository.findAllByProductId(productId);
         Product product = productUsers.get(0).getProduct();
 
-        // 권한 확인
-        if (product.getCreatedBy() != userId) {
-            throw new RuntimeException("권한이 없습니다.");
-        }
+        if (product.getCreatedBy() != userId) throw new RuntimeException("권한이 없습니다.");
 
-        if (product.getStatus() != GroupBuyingStatus.OPEN) {
-            throw new RuntimeException("마감할 수 없는 공동구매입니다.");
-        }
+        if (product.getStatus() != GroupBuyingStatus.OPEN) throw new RuntimeException("마감할 수 없는 공동구매입니다.");
 
-        int curParticipant = productUsers.size();
-        if (curParticipant < product.getMaxParticipant()) {
-            throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
-        }
+        if (productUsers.size() < product.getMaxParticipant()) throw new RuntimeException("충분한 인원이 모집되지 않았습니다.");
 
         product.setStatus(GroupBuyingStatus.CLOSE);
 
-        // TODO: 공동구매 참여자들에게 마감 알림 전송
-        // ...
+        // 진행자에게 [공동구매 마감] 알림 전송
+        NoticeDto message1 = NoticeDto.builder()
+                .object("PRODUCT")
+                .title(GROUP_BUYING_CLOSE_01.getTitle())
+                .content(GROUP_BUYING_CLOSE_01.getContent())
+                .value1(product.getName())
+                .build();
+
+        noticeService.sendNotice(message1, userId);
+
+        // 참여자에게 [공동구매 마감] 알림 전송
+        NoticeDto message2 = NoticeDto.builder()
+                .object("PRODUCT")
+                .title(GROUP_BUYING_CLOSE_02.getTitle())
+                .content(GROUP_BUYING_CLOSE_02.getContent())
+                .value1(product.getName())
+                .build();
+
+        for (ProductUser productUser : productUsers) {
+            if (productUser.getType() == GroupBuyingUserType.MEMBER)
+                noticeService.sendNotice(message2, productUser.getUser().getId());
+        }
 
         return getProductDto(product);
     }
 
     public ProductDto settleProduct(SettleProductDto input, Long userId) {
-        ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
-                .orElseThrow(() -> new NoSuchElementException());
-        Product product = productUser.getProduct();
+        List<ProductUser> productUsers = productUserRepository.findAllByProductId(input.getId());
+        Product product = productUsers.get(0).getProduct();
 
-        // 권한 확인
-        if (product.getCreatedBy() != userId) {
-            throw new RuntimeException("권한이 없습니다.");
-        }
+        if (product.getCreatedBy() != userId) throw new RuntimeException("권한이 없습니다.");
 
-        if (productUser.getType() != GroupBuyingUserType.MANAGER) {
-            throw new RuntimeException("공동구매 진행자만 정산을 요청할 수 있습니다.");
-        }
-
-        if (product.getStatus() != GroupBuyingStatus.CLOSE) {
-            throw new RuntimeException("정산할 수 없는 공동구매입니다.");
-        }
+        if (product.getStatus() != GroupBuyingStatus.CLOSE) throw new RuntimeException("정산할 수 없는 공동구매입니다.");
 
         product.setBankName(input.getBankName());
         product.setAccountNumber(input.getAccountNumber());
@@ -238,36 +203,51 @@ public class ProductService {
         product.setAmount(input.getAmount());
         product.setStatus(GroupBuyingStatus.SETTLE);
 
-        // TODO: 공동구매 참여자들에게 정산 알림 전송
-        // ...
+        // 참여자에게 [공동구매 정산] 알림 전송
+        NoticeDto message = NoticeDto.builder()
+                .object("PRODUCT")
+                .title(GROUP_BUYING_SETTLE_01.getTitle())
+                .content(GROUP_BUYING_SETTLE_01.getContent())
+                .value1(product.getName())
+                .value2(product.getBankName())
+                .value3(product.getAccountNumber())
+                .value4(String.valueOf(product.getAmount()))
+                .build();
+
+        for (ProductUser productUser : productUsers) {
+            if (productUser.getType() == GroupBuyingUserType.MEMBER)
+                noticeService.sendNotice(message, productUser.getUser().getId());
+        }
 
         return getProductDto(product);
     }
 
     public ProductDto receiveProduct(ReceiveProductDto input, Long userId) {
-        ProductUser productUser = productUserRepository.findByProductIdAndUserId(input.getId(), userId)
-                .orElseThrow(() -> new NoSuchElementException());
-        Product product = productUser.getProduct();
+        List<ProductUser> productUsers = productUserRepository.findAllByProductId(input.getId());
+        Product product = productUsers.get(0).getProduct();
 
-        // 권한 확인
-        if (product.getCreatedBy() != userId) {
-            throw new RuntimeException("권한이 없습니다.");
-        }
+        if (product.getCreatedBy() != userId) throw new RuntimeException("권한이 없습니다.");
 
-        if (productUser.getType() != GroupBuyingUserType.MANAGER) {
-            throw new RuntimeException("공동구매 진행자만 수령을 요청할 수 있습니다.");
-        }
-
-        if (product.getStatus() != GroupBuyingStatus.SETTLE) {
-            throw new RuntimeException("수령할 수 없는 공동구매입니다.");
-        }
+        if (product.getStatus() != GroupBuyingStatus.SETTLE) throw new RuntimeException("수령할 수 없는 공동구매입니다.");
 
         product.setPickupLocation(input.getPickupLocation());
-        product.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), DateTimeFormatter.ISO_DATE_TIME));
+        product.setPickupDatetime(LocalDateTime.parse(input.getPickupDatetime(), ISO_DATE_TIME));
         product.setStatus(GroupBuyingStatus.RECEIVE);
 
-        // TODO: 공동구매 참여자들에게 수령 알림 전송
-        // ...
+        // 참여자에게 [공동구매 수령] 알림 전송
+        NoticeDto message = NoticeDto.builder()
+                .object("PRODUCT")
+                .title(GROUP_BUYING_RECEIVE_01.getTitle())
+                .content(GROUP_BUYING_RECEIVE_01.getContent())
+                .value1(product.getName())
+                .value2(product.getPickupDatetime().format(DateTimeFormatter.ofPattern("Y년 MM월 dd일 HH시 mm분")))
+                .value3(product.getPickupLocation())
+                .build();
+
+        for (ProductUser productUser : productUsers) {
+            if (productUser.getType() == GroupBuyingUserType.MEMBER)
+                noticeService.sendNotice(message, productUser.getUser().getId());
+        }
 
         return getProductDto(product);
     }
@@ -277,18 +257,9 @@ public class ProductService {
                 .orElseThrow(() -> new NoSuchElementException());
         Product product = productUser.getProduct();
 
-        // 권한 확인
-        if (product.getCreatedBy() != userId) {
-            throw new RuntimeException("권한이 없습니다.");
-        }
+        if (product.getCreatedBy() != userId) throw new RuntimeException("권한이 없습니다.");
 
-        if (productUser.getType() != GroupBuyingUserType.MANAGER) {
-            throw new RuntimeException("공동구매 진행자만 완료를 요청할 수 있습니다.");
-        }
-
-        if (product.getStatus() != GroupBuyingStatus.RECEIVE) {
-            throw new RuntimeException("완료할 수 없는 공동구매입니다.");
-        }
+        if (product.getStatus() != GroupBuyingStatus.RECEIVE) throw new RuntimeException("완료할 수 없는 공동구매입니다.");
 
         product.setStatus(GroupBuyingStatus.COMPLETE);
 

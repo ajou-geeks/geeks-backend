@@ -33,7 +33,8 @@ public class NoticeService {
                 .user(user)
                 .object(MessageObject.valueOf(message.getObject()))
                 .title(String.format(message.getTitle()))
-                .content(String.format(message.getContent(), message.getValue1(), message.getValue2()))
+                .content(String.format(message.getContent(),
+                        message.getValue1(), message.getValue2(), message.getValue3(), message.getValue4()))
 //                .createdBy(0L)
 //                .updatedBy(0L)
                 .build();
