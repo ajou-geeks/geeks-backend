@@ -19,6 +19,8 @@ public class NoticeDto {
     private String content;
     private String value1;
     private String value2;
+    private String value3;
+    private String value4;
     private String createdAt;
 
     public static NoticeDto from(Notice notice) {

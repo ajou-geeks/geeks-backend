@@ -32,4 +32,14 @@ public class ProductUser extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public static ProductUser createProductUser(Product product, User user, GroupBuyingUserType type) {
+        return ProductUser.builder()
+                .product(product)
+                .user(user)
+                .type(type)
+                .createdBy(user.getId())
+                .updatedBy(user.getId())
+                .build();
+    }
 }
