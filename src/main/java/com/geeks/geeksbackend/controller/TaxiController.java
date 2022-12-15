@@ -88,8 +88,7 @@ public class TaxiController {
 
     @Operation(summary = "PATCH() /taxi/cancle", description = "택시 공동구매 취소 API")
     @Parameters({
-            @Parameter(name = "id", description = "택시 공동구매 아이디", example = "1"),
-            @Parameter(name = "userId", description = "공동구매를 취소하고자 하는 유저의 아이디", example = "1")
+            @Parameter(name = "id", description = "택시 공동구매 아이디", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "택시 공동구매 취소 완료", content = @Content(schema = @Schema(implementation = Taxi.class))),
@@ -98,7 +97,8 @@ public class TaxiController {
     @PatchMapping("/cancle")
     public ResponseEntity<?> cancleTaxi(@RequestBody ChangeDto changeDto) {
         try {
-            boolean success = taxiService.cancleTaxi(changeDto);
+            Long userId = userService.getMyUserWithAuthorities().getId();
+            boolean success = taxiService.cancleTaxi(changeDto, userId);
             if (success) {
                 return ResponseEntity.ok().body("택시 공동구매 취소 완료");
             } else {
@@ -111,8 +111,7 @@ public class TaxiController {
 
     @Operation(summary = "PATCH() /taxi/complete", description = "택시 공동구매 마감 API")
     @Parameters({
-            @Parameter(name = "id", description = "택시 공동구매 아이디", example = "1"),
-            @Parameter(name = "userId", description = "공동구매를 취소하고자 하는 유저의 아이디", example = "1")
+            @Parameter(name = "id", description = "택시 공동구매 아이디", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "택시 공동구매 마감 완료", content = @Content(schema = @Schema(implementation = Taxi.class))),
@@ -121,7 +120,8 @@ public class TaxiController {
     @PatchMapping("/complete")
     public ResponseEntity<?> completeTaxi(@RequestBody ChangeDto changeDto) {
         try {
-            boolean success = taxiService.completeTaxi(changeDto);
+            Long userId = userService.getMyUserWithAuthorities().getId();
+            boolean success = taxiService.completeTaxi(changeDto, userId);
             if (success) {
                 return ResponseEntity.ok().body("택시 공동구매 마감 완료");
             } else {
@@ -134,8 +134,7 @@ public class TaxiController {
 
     @Operation(summary = "POST() /taxi/join", description = "택시 공동구매 참여 API")
     @Parameters({
-            @Parameter(name = "id", description = "택시 아이디", example = "1"),
-            @Parameter(name = "userId", description = "유저 아이디", example = "1")
+            @Parameter(name = "id", description = "택시 아이디", example = "1")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "택시 공동구매 참여 완료", content = @Content(schema = @Schema(implementation = ChangeDto.class))),
@@ -144,7 +143,8 @@ public class TaxiController {
     @PostMapping("/join")
     public ResponseEntity<?> joinTaxi(@RequestBody ChangeDto changeDto) {
         try {
-            int result = taxiService.joinTaxi(changeDto);
+            Long userId = userService.getMyUserWithAuthorities().getId();
+            int result = taxiService.joinTaxi(changeDto, userId);
             switch (result) {
                 case 1:
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("참여기간 초과");
