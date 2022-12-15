@@ -70,10 +70,10 @@ public class TaxiService {
         taxiUserRepository.save(taxiUser);
     }
 
-    public boolean cancleTaxi(ChangeDto changeDto) {
+    public boolean cancleTaxi(ChangeDto changeDto, Long userId) {
         Taxi taxi = taxiRepository.findOneById(changeDto.getId());
         if (taxi != null) {
-            if (taxi.getUserId() != changeDto.getUserId()) {
+            if (taxi.getUserId() != userId) {
                 return false;
             }
             taxi.setDeleted(true);
@@ -84,10 +84,10 @@ public class TaxiService {
         return false;
     }
 
-    public boolean completeTaxi(ChangeDto changeDto) {
+    public boolean completeTaxi(ChangeDto changeDto, Long userId) {
         Taxi taxi = taxiRepository.findOneById(changeDto.getId());
         if (taxi != null) {
-            if (taxi.getUserId() != changeDto.getUserId()) {
+            if (taxi.getUserId() != userId) {
                 return false;
             }
             taxi.setStatus(GroupBuyingStatus.COMPLETE);;
@@ -108,7 +108,7 @@ public class TaxiService {
      *         4 : 존재하지 않는 공동구매
      *         5 : 존재하지 않는 유저
      */
-    public int joinTaxi(ChangeDto changeDto) {
+    public int joinTaxi(ChangeDto changeDto, Long userId) {
         Taxi taxi = taxiRepository.findOneById(changeDto.getId());
         if (taxi != null) {
             if (taxi.getEndTime().isAfter(LocalDateTime.now())) {
@@ -119,16 +119,16 @@ public class TaxiService {
                 return 2;
             }
 
-            TaxiUser taxiUser = taxiUserRepository.findByTaxiIdAndUserId(changeDto.getId(), changeDto.getUserId());
-            if (taxiUser != null && taxiUser.getUserId() == changeDto.getUserId()) {
+            TaxiUser taxiUser = taxiUserRepository.findByTaxiIdAndUserId(changeDto.getId(), userId);
+            if (taxiUser != null && taxiUser.getUserId() == userId) {
                 return 3;
             }
 
-            User user = userRepository.findById(changeDto.getUserId());
+            User user = userRepository.findById(userId).get();
             if (user != null) {
                 TaxiUser newTaxiUser = TaxiUser.builder()
                         .taxiId(changeDto.getId())
-                        .userId(changeDto.getUserId())
+                        .userId(userId)
                         .email(user.getEmail())
                         .build();
 

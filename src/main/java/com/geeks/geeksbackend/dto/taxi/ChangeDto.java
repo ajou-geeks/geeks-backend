@@ -9,5 +9,4 @@ import lombok.*;
 @NoArgsConstructor
 public class ChangeDto {
     private long id;
-    private long userId;
 }
